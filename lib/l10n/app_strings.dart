@@ -45,7 +45,10 @@ abstract final class AppStrings {
       'Nhập email bạn dùng để đăng ký tài khoản.';
   static const sendResetLink = 'Gửi liên kết đặt lại mật khẩu';
 
+  static const settings = 'Cài đặt';
+  static const settingsAccount = 'Tài khoản';
   static const signOut = 'Đăng xuất';
+  static const signOutConfirmation = 'Bạn có muốn đăng xuất khỏi ứng dụng?';
   static const resetSent =
       'Nếu email đã đăng ký, hãy kiểm tra hộp thư để đặt lại mật khẩu.';
   static const authError = 'Không thể thực hiện thao tác. Vui lòng thử lại.';

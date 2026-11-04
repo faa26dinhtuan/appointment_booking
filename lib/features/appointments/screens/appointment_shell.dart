@@ -1,28 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_strings.dart';
 import '../../../core/widgets/date_time_sheet.dart';
 import '../widgets/appointment_list.dart';
-import '../../auth/controllers/auth_controller.dart';
-import '../../auth/widgets/auth_notice.dart';
+import '../../settings/widgets/settings_panel.dart';
 import 'appointment_form.dart';
 
-class AppointmentShell extends ConsumerStatefulWidget {
+class AppointmentShell extends StatefulWidget {
   const AppointmentShell({required this.uid, super.key});
 
   final String uid;
 
   @override
-  ConsumerState<AppointmentShell> createState() => _AppointmentShellState();
+  State<AppointmentShell> createState() => _AppointmentShellState();
 }
 
-class _AppointmentShellState extends ConsumerState<AppointmentShell> {
+class _AppointmentShellState extends State<AppointmentShell> {
   int _tab = 0;
-  bool _signingOut = false;
   DateTime _day = DateUtils.dateOnly(DateTime.now());
 
   Future<void> _pickDay() async {
@@ -47,43 +44,22 @@ class _AppointmentShellState extends ConsumerState<AppointmentShell> {
     }
   }
 
-  Future<void> _signOut() async {
-    if (_signingOut) return;
-    setState(() => _signingOut = true);
-    HapticFeedback.lightImpact();
-    try {
-      await ref.read(authControllerProvider).signOut();
-    } catch (error) {
-      if (mounted) {
-        await showAuthNotice(
-          context,
-          AppStrings.signOut,
-          authErrorMessage(error),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _signingOut = false);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final isCalendar = _tab == 1;
+    final isSettings = _tab == 2;
     return Scaffold(
       body: SafeArea(
         bottom: false,
         child: CustomScrollView(
           slivers: [
             CupertinoSliverNavigationBar(
-              trailing: CupertinoButton(
-                padding: EdgeInsets.zero,
-                onPressed: _signingOut ? null : _signOut,
-                child: _signingOut
-                    ? const CupertinoActivityIndicator()
-                    : const Text(AppStrings.signOut),
-              ),
               largeTitle: Text(
-                isCalendar ? AppStrings.calendar : AppStrings.appName,
+                isSettings
+                    ? AppStrings.settings
+                    : isCalendar
+                    ? AppStrings.calendar
+                    : AppStrings.appName,
               ),
             ),
             SliverPadding(
@@ -94,29 +70,31 @@ class _AppointmentShellState extends ConsumerState<AppointmentShell> {
                     constraints: const BoxConstraints(
                       maxWidth: AppTheme.contentWidth,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (isCalendar) ...[
-                          CupertinoButton.tinted(
-                            onPressed: _pickDay,
-                            child: Text(AppStrings.formatDate(_day)),
-                          ),
-                          const SizedBox(height: AppTheme.medium),
-                        ],
+                    child: isSettings
+                        ? const SettingsPanel()
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              if (isCalendar) ...[
+                                CupertinoButton.tinted(
+                                  onPressed: _pickDay,
+                                  child: Text(AppStrings.formatDate(_day)),
+                                ),
+                                const SizedBox(height: AppTheme.medium),
+                              ],
 
-                        if (!isCalendar)
-                          CupertinoButton.filled(
-                            onPressed: _openForm,
-                            child: const Text(AppStrings.addAppointment),
+                              if (!isCalendar)
+                                CupertinoButton.filled(
+                                  onPressed: _openForm,
+                                  child: const Text(AppStrings.addAppointment),
+                                ),
+                              const SizedBox(height: AppTheme.medium),
+                              AppointmentList(
+                                uid: widget.uid,
+                                day: isCalendar ? _day : null,
+                              ),
+                            ],
                           ),
-                        const SizedBox(height: AppTheme.medium),
-                        AppointmentList(
-                          uid: widget.uid,
-                          day: isCalendar ? _day : null,
-                        ),
-                      ],
-                    ),
                   ),
                 ),
               ),
@@ -139,6 +117,10 @@ class _AppointmentShellState extends ConsumerState<AppointmentShell> {
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.calendar),
             label: AppStrings.calendar,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.settings),
+            label: AppStrings.settings,
           ),
         ],
       ),
