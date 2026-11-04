@@ -35,6 +35,13 @@ abstract final class AppStrings {
   static const done = 'Xong';
   static const cancel = 'Hủy';
 
+  static const createAccount = 'Tạo tài khoản';
+  static const registerSubtitle = 'Dùng email để lưu lịch hẹn của bạn.';
+  static const confirmPassword = 'Xác nhận mật khẩu';
+  static const confirmPasswordRequired = 'Nhập lại mật khẩu.';
+  static const passwordMismatch = 'Hai mật khẩu chưa khớp.';
+  static const passwordTooShort = 'Mật khẩu cần ít nhất 6 ký tự.';
+
   static String formatDate(DateTime date) =>
       DateFormat.yMMMMd('vi').format(date);
 }

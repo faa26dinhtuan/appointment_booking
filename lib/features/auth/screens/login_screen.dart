@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_strings.dart';
 import '../../appointments/screens/appointment_shell.dart';
+import '../auth_validation.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,8 +15,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  static final _emailPattern = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
-
   final _form = GlobalKey<FormState>();
   bool _obscure = true;
 
@@ -92,16 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               textInputAction: TextInputAction.next,
                               autofillHints: const [AutofillHints.username],
                               autocorrect: false,
-                              validator: (value) {
-                                final email = value?.trim() ?? '';
-                                if (email.isEmpty) {
-                                  return AppStrings.emailRequired;
-                                }
-                                if (!_emailPattern.hasMatch(email)) {
-                                  return AppStrings.emailInvalid;
-                                }
-                                return null;
-                              },
+                              validator: AuthValidation.email,
                             ),
                             CupertinoTextFormFieldRow(
                               placeholder: AppStrings.password,
@@ -146,7 +137,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   alignment: WrapAlignment.center,
                   children: [
                     CupertinoButton(
-                      onPressed: () => _showPreviewNotice(AppStrings.register),
+                      onPressed: () => Navigator.of(context).push<void>(
+                        CupertinoPageRoute(
+                          builder: (_) => const RegisterScreen(),
+                        ),
+                      ),
                       child: const Text(AppStrings.register),
                     ),
                     CupertinoButton(
