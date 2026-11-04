@@ -15,7 +15,7 @@ service cloud.firestore {
           && data.startsAt is timestamp;
       }
 
-      allow read: if isOwner();
+      allow read, delete: if isOwner();
       allow create: if isOwner() && validAppointment()
         && request.resource.data.startsAt > request.time;
       allow update: if isOwner() && validAppointment()

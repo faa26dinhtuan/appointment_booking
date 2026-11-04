@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart' show DateUtils, TimeOfDay;
+import 'package:flutter/material.dart'
+    show DateUtils, ScaffoldMessenger, SnackBar, TimeOfDay;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
@@ -13,6 +14,20 @@ class AppointmentList extends ConsumerWidget {
 
   final String uid;
   final DateTime? day;
+
+  Future<void> _openDetails(BuildContext context, String appointmentId) async {
+    final deleted = await Navigator.of(context).push<bool>(
+      CupertinoPageRoute(
+        builder: (_) =>
+            AppointmentDetailScreen(uid: uid, appointmentId: appointmentId),
+      ),
+    );
+    if (context.mounted && deleted == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppStrings.appointmentDeleted)),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,14 +64,7 @@ class AppointmentList extends ConsumerWidget {
                     padding: const EdgeInsets.only(bottom: AppTheme.medium),
                     child: CupertinoButton(
                       padding: EdgeInsets.zero,
-                      onPressed: () => Navigator.of(context).push<void>(
-                        CupertinoPageRoute(
-                          builder: (_) => AppointmentDetailScreen(
-                            uid: uid,
-                            appointmentId: appointment.id,
-                          ),
-                        ),
-                      ),
+                      onPressed: () => _openDetails(context, appointment.id),
                       child: Container(
                         width: double.infinity,
                         decoration: AppTheme.card,

@@ -31,6 +31,9 @@ class AppointmentsRepository {
         );
   }
 
+  Future<void> delete({required String uid, required String id}) =>
+      _appointments(uid).doc(id).delete();
+
   Future<void> save({
     String? id,
     required String uid,

@@ -74,6 +74,14 @@ abstract final class AppStrings {
   static const appointmentUpdated = 'Đã cập nhật lịch hẹn.';
   static const appointmentUnavailable = 'Lịch hẹn không còn khả dụng.';
 
+  static const delete = 'Xóa';
+  static const deleteAppointment = 'Xóa lịch hẹn';
+  static const deleteAppointmentConfirmation =
+      'Bạn có muốn xóa lịch hẹn này? Lịch đã xóa không thể khôi phục.';
+  static const appointmentDeleted = 'Đã xóa lịch hẹn.';
+  static const appointmentDeleteError =
+      'Không thể xóa lịch hẹn. Vui lòng thử lại.';
+
   static String formatDate(DateTime date) =>
       DateFormat.yMMMMd('vi').format(date);
 }

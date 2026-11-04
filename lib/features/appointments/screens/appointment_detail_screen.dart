@@ -27,6 +27,8 @@ class AppointmentDetailScreen extends ConsumerStatefulWidget {
 class _AppointmentDetailScreenState
     extends ConsumerState<AppointmentDetailScreen> {
   bool _updated = false;
+  bool _deleting = false;
+  bool _deleteFailed = false;
 
   Future<void> _edit(Appointment appointment) async {
     HapticFeedback.lightImpact();
@@ -39,97 +41,162 @@ class _AppointmentDetailScreenState
     if (mounted && updated == true) setState(() => _updated = true);
   }
 
+  Future<void> _delete() async {
+    if (_deleting) return;
+    HapticFeedback.lightImpact();
+    final confirmed = await showCupertinoDialog<bool>(
+      context: context,
+      builder: (dialogContext) => CupertinoAlertDialog(
+        title: const Text(AppStrings.deleteAppointment),
+        content: const Text(AppStrings.deleteAppointmentConfirmation),
+        actions: [
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text(AppStrings.cancel),
+          ),
+          CupertinoDialogAction(
+            isDestructiveAction: true,
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text(AppStrings.delete),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || confirmed != true) return;
+    setState(() {
+      _deleting = true;
+      _deleteFailed = false;
+    });
+    try {
+      await ref
+          .read(appointmentsRepositoryProvider)
+          .delete(uid: widget.uid, id: widget.appointmentId);
+      if (mounted && ModalRoute.of(context)?.isCurrent == true) {
+        Navigator.of(context).pop(true);
+      }
+    } catch (_) {
+      if (mounted) setState(() => _deleteFailed = true);
+    } finally {
+      if (mounted) setState(() => _deleting = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = appointmentsProvider(widget.uid);
-    final content = ref
-        .watch(provider)
-        .when(
-          loading: () => const Center(child: CupertinoActivityIndicator()),
-          error: (_, _) => Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(AppStrings.appointmentsLoadError),
-              CupertinoButton(
-                onPressed: () => ref.invalidate(provider),
-                child: const Text(AppStrings.retry),
-              ),
-            ],
-          ),
-          data: (items) {
-            final appointment = items
-                .where((item) => item.id == widget.appointmentId)
-                .firstOrNull;
-            if (appointment == null) {
-              return const Text(AppStrings.appointmentUnavailable);
-            }
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                DecoratedBox(
-                  decoration: AppTheme.card,
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppTheme.large),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          appointment.title,
-                          style: CupertinoTheme.of(context)
-                              .textTheme
-                              .navTitleTextStyle,
-                        ),
-                        const SizedBox(height: AppTheme.medium),
-                        Text(AppStrings.formatDate(appointment.startsAt)),
-                        Text(
-                          TimeOfDay.fromDateTime(appointment.startsAt)
-                              .format(context),
-                        ),
-                        if (appointment.location.isNotEmpty) ...[
-                          const SizedBox(height: AppTheme.medium),
-                          const Text(
-                            AppStrings.location,
-                            style: TextStyle(color: AppTheme.muted),
-                          ),
-                          Text(appointment.location),
-                        ],
-                        if (appointment.notes.isNotEmpty) ...[
-                          const SizedBox(height: AppTheme.medium),
-                          const Text(
-                            AppStrings.notes,
-                            style: TextStyle(color: AppTheme.muted),
-                          ),
-                          Text(appointment.notes),
-                        ],
-                      ],
+    final content = _deleting
+        ? const Center(child: CupertinoActivityIndicator())
+        : ref
+              .watch(provider)
+              .when(
+                loading: () =>
+                    const Center(child: CupertinoActivityIndicator()),
+                error: (_, _) => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(AppStrings.appointmentsLoadError),
+                    CupertinoButton(
+                      onPressed: () => ref.invalidate(provider),
+                      child: const Text(AppStrings.retry),
                     ),
-                  ),
+                  ],
                 ),
-                const SizedBox(height: AppTheme.medium),
-                if (appointment.pending)
-                  const Text(
-                    AppStrings.appointmentPending,
-                    textAlign: TextAlign.center,
-                  )
-                else if (_updated)
-                  Semantics(
-                    liveRegion: true,
-                    child: const Text(
-                      AppStrings.appointmentUpdated,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                CupertinoButton.filled(
-                  borderRadius: AppTheme.corners,
-                  onPressed: appointment.pending
-                      ? null
-                      : () => _edit(appointment),
-                  child: const Text(AppStrings.editAppointment),
-                ),
-              ],
-            );
-          },
-        );
+                data: (items) {
+                  final appointment = items
+                      .where((item) => item.id == widget.appointmentId)
+                      .firstOrNull;
+                  if (appointment == null) {
+                    return const Text(AppStrings.appointmentUnavailable);
+                  }
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      DecoratedBox(
+                        decoration: AppTheme.card,
+                        child: Padding(
+                          padding: const EdgeInsets.all(AppTheme.large),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                appointment.title,
+                                style: CupertinoTheme.of(context)
+                                    .textTheme
+                                    .navTitleTextStyle,
+                              ),
+                              const SizedBox(height: AppTheme.medium),
+                              Text(AppStrings.formatDate(appointment.startsAt)),
+                              Text(
+                                TimeOfDay.fromDateTime(appointment.startsAt)
+                                    .format(context),
+                              ),
+                              if (appointment.location.isNotEmpty) ...[
+                                const SizedBox(height: AppTheme.medium),
+                                const Text(
+                                  AppStrings.location,
+                                  style: TextStyle(color: AppTheme.muted),
+                                ),
+                                Text(appointment.location),
+                              ],
+                              if (appointment.notes.isNotEmpty) ...[
+                                const SizedBox(height: AppTheme.medium),
+                                const Text(
+                                  AppStrings.notes,
+                                  style: TextStyle(color: AppTheme.muted),
+                                ),
+                                Text(appointment.notes),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: AppTheme.medium),
+                      if (appointment.pending)
+                        const Text(
+                          AppStrings.appointmentPending,
+                          textAlign: TextAlign.center,
+                        )
+                      else if (_updated)
+                        Semantics(
+                          liveRegion: true,
+                          child: const Text(
+                            AppStrings.appointmentUpdated,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      CupertinoButton.filled(
+                        borderRadius: AppTheme.corners,
+                        onPressed: appointment.pending
+                            ? null
+                            : () => _edit(appointment),
+                        child: const Text(AppStrings.editAppointment),
+                      ),
+                      if (_deleteFailed)
+                        Semantics(
+                          liveRegion: true,
+                          child: const Text(
+                            AppStrings.appointmentDeleteError,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      CupertinoButton(
+                        onPressed: appointment.pending ? null : _delete,
+                        child: Text(
+                          AppStrings.deleteAppointment,
+                          style: appointment.pending
+                              ? null
+                              : TextStyle(
+                                  color: CupertinoColors.systemRed.resolveFrom(
+                                    context,
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              );
 
     return CupertinoPageScaffold(
       navigationBar: const CupertinoNavigationBar(
