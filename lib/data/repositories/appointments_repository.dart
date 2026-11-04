@@ -43,6 +43,31 @@ class AppointmentsRepository {
     required AppointmentStatus status,
   }) => _appointments(uid).doc(id).update({'status': status.name});
 
+  Future<bool> hasTimeConflict({
+    required String uid,
+    required DateTime minuteStart,
+    String? excludingId,
+  }) async {
+    final matches = await _appointments(uid)
+        .where(
+          'startsAt',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(minuteStart),
+        )
+        .where(
+          'startsAt',
+          isLessThan: Timestamp.fromDate(
+            minuteStart.add(const Duration(minutes: 1)),
+          ),
+        )
+        .get(const GetOptions(source: Source.server));
+    return matches.docs.any(
+      (document) =>
+          document.id != excludingId &&
+          AppointmentStatus.fromStorage(document.data()['status']) !=
+              AppointmentStatus.canceled,
+    );
+  }
+
   Future<void> save({
     String? id,
     required String uid,

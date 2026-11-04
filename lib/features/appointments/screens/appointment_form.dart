@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart' show FirebaseException;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -74,6 +75,28 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
     super.dispose();
   }
 
+  Future<bool> _confirmTimeConflict() async {
+    final confirmed = await showCupertinoDialog<bool>(
+      context: context,
+      builder: (dialogContext) => CupertinoAlertDialog(
+        title: const Text(AppStrings.appointmentConflictTitle),
+        content: const Text(AppStrings.appointmentConflictMessage),
+        actions: [
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text(AppStrings.appointmentChooseAnotherTime),
+          ),
+          CupertinoDialogAction(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text(AppStrings.appointmentSaveAnyway),
+          ),
+        ],
+      ),
+    );
+    return confirmed == true;
+  }
+
   Future<void> _save() async {
     if (_saving) return;
     final title = _title.text.trim();
@@ -112,18 +135,41 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
       _error = null;
     });
     try {
-      await ref
-          .read(appointmentsRepositoryProvider)
-          .save(
-            id: widget.appointment?.id,
-            uid: widget.uid,
-            title: title,
-            notes: _notes.text.trim(),
-            location: _location.text.trim(),
-            startsAt: startsAt,
-          );
+      final repository = ref.read(appointmentsRepositoryProvider);
+      if (!sameTime &&
+          widget.appointment?.status != AppointmentStatus.canceled) {
+        final conflict = await repository.hasTimeConflict(
+          uid: widget.uid,
+          minuteStart: selected,
+          excludingId: widget.appointment?.id,
+        );
+        if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
+        if (conflict && !await _confirmTimeConflict()) return;
+        if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
+        if (!startsAt.isAfter(DateTime.now())) {
+          setState(() => _error = AppStrings.appointmentMustBeFuture);
+          return;
+        }
+      }
+      await repository.save(
+        id: widget.appointment?.id,
+        uid: widget.uid,
+        title: title,
+        notes: _notes.text.trim(),
+        location: _location.text.trim(),
+        startsAt: startsAt,
+      );
       if (mounted && ModalRoute.of(context)?.isCurrent == true) {
         Navigator.of(context).pop(true);
+      }
+    } on FirebaseException catch (error) {
+      if (mounted) {
+        final message = switch (error.code) {
+          'unavailable' ||
+          'deadline-exceeded' => AppStrings.appointmentConflictNetworkError,
+          _ => AppStrings.appointmentSaveError,
+        };
+        setState(() => _error = message);
       }
     } catch (_) {
       if (mounted) {

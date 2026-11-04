@@ -112,6 +112,14 @@ abstract final class AppStrings {
 
   static String appointmentsOnDay(int count) => '$count lịch hẹn trong ngày';
 
+  static const appointmentConflictTitle = 'Trùng giờ hẹn';
+  static const appointmentConflictMessage =
+      'Bạn đã có một lịch hẹn vào thời điểm này. Bạn vẫn muốn lưu?';
+  static const appointmentChooseAnotherTime = 'Chọn giờ khác';
+  static const appointmentSaveAnyway = 'Vẫn lưu';
+  static const appointmentConflictNetworkError =
+      'Không thể kết nối Firestore. Kiểm tra mạng rồi thử lại.';
+
   static String formatDate(DateTime date) =>
       DateFormat.yMMMMd('vi').format(date);
 }
