@@ -4,11 +4,15 @@ import 'package:flutter/services.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_strings.dart';
-import '../widgets/appointment_empty_state.dart';
+import '../../../core/widgets/date_time_sheet.dart';
+import '../widgets/appointment_list.dart';
+import '../../settings/widgets/settings_panel.dart';
 import 'appointment_form.dart';
 
 class AppointmentShell extends StatefulWidget {
-  const AppointmentShell({super.key});
+  const AppointmentShell({required this.uid, super.key});
+
+  final String uid;
 
   @override
   State<AppointmentShell> createState() => _AppointmentShellState();
@@ -19,33 +23,43 @@ class _AppointmentShellState extends State<AppointmentShell> {
   DateTime _day = DateUtils.dateOnly(DateTime.now());
 
   Future<void> _pickDay() async {
-    final day = await showDatePicker(
+    final day = await showDateTimeSheet(
       context: context,
-      initialDate: _day,
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2200),
+      initial: _day,
+      minimumDate: DateTime(1900),
+      maximumDate: DateTime(2200),
     );
     if (mounted && day != null) setState(() => _day = day);
   }
 
-  void _openForm() {
+  Future<void> _openForm() async {
     HapticFeedback.lightImpact();
-    Navigator.of(
-      context,
-    ).push<void>(CupertinoPageRoute(builder: (_) => const AppointmentForm()));
+    final saved = await Navigator.of(context).push<bool>(
+      CupertinoPageRoute(builder: (_) => AppointmentForm(uid: widget.uid)),
+    );
+    if (mounted && saved == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppStrings.appointmentSaved)),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final isCalendar = _tab == 1;
+    final isSettings = _tab == 2;
     return Scaffold(
       body: SafeArea(
         bottom: false,
         child: CustomScrollView(
           slivers: [
-            SliverAppBar.large(
-              title: Text(
-                isCalendar ? AppStrings.calendar : AppStrings.appName,
+            CupertinoSliverNavigationBar(
+              largeTitle: Text(
+                isSettings
+                    ? AppStrings.settings
+                    : isCalendar
+                    ? AppStrings.calendar
+                    : AppStrings.appName,
               ),
             ),
             SliverPadding(
@@ -56,27 +70,31 @@ class _AppointmentShellState extends State<AppointmentShell> {
                     constraints: const BoxConstraints(
                       maxWidth: AppTheme.contentWidth,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (isCalendar) ...[
-                          OutlinedButton.icon(
-                            onPressed: _pickDay,
-                            icon: const Icon(CupertinoIcons.calendar),
-                            label: Text(AppStrings.formatDate(_day)),
+                    child: isSettings
+                        ? const SettingsPanel()
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              if (isCalendar) ...[
+                                CupertinoButton.tinted(
+                                  onPressed: _pickDay,
+                                  child: Text(AppStrings.formatDate(_day)),
+                                ),
+                                const SizedBox(height: AppTheme.medium),
+                              ],
+
+                              if (!isCalendar)
+                                CupertinoButton.filled(
+                                  onPressed: _openForm,
+                                  child: const Text(AppStrings.addAppointment),
+                                ),
+                              const SizedBox(height: AppTheme.medium),
+                              AppointmentList(
+                                uid: widget.uid,
+                                day: isCalendar ? _day : null,
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: AppTheme.medium),
-                        ],
-                        AppointmentEmptyState(isCalendar: isCalendar),
-                        const SizedBox(height: AppTheme.medium),
-                        if (!isCalendar)
-                          FilledButton.icon(
-                            onPressed: _openForm,
-                            icon: const Icon(CupertinoIcons.add),
-                            label: const Text(AppStrings.addAppointment),
-                          ),
-                      ],
-                    ),
                   ),
                 ),
               ),
@@ -84,21 +102,25 @@ class _AppointmentShellState extends State<AppointmentShell> {
           ],
         ),
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _tab,
-        onDestinationSelected: (index) {
+      bottomNavigationBar: CupertinoTabBar(
+        currentIndex: _tab,
+        onTap: (index) {
           if (index == _tab) return;
           HapticFeedback.selectionClick();
           setState(() => _tab = index);
         },
-        destinations: const [
-          NavigationDestination(
+        items: const [
+          BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.list_bullet),
             label: AppStrings.appName,
           ),
-          NavigationDestination(
+          BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.calendar),
             label: AppStrings.calendar,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.settings),
+            label: AppStrings.settings,
           ),
         ],
       ),

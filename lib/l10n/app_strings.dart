@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
+import '../data/models/appointment.dart';
+
 abstract final class AppStrings {
   static const locale = Locale('vi');
   static const appName = 'Lịch hẹn';
@@ -16,8 +18,115 @@ abstract final class AppStrings {
   static const location = 'Địa điểm';
   static const date = 'Ngày';
   static const time = 'Giờ';
-  static const formPreview =
-      'Bạn có thể nhập thông tin và chọn ngày giờ ở bản này.';
+
+  static const login = 'Đăng nhập';
+  static const loginSubtitle = 'Quản lý lịch hẹn của bạn ở một nơi.';
+  static const email = 'Email';
+  static const password = 'Mật khẩu';
+  static const emailRequired = 'Nhập địa chỉ email.';
+  static const emailInvalid = 'Địa chỉ email chưa đúng định dạng.';
+  static const passwordRequired = 'Nhập mật khẩu.';
+  static const showPassword = 'Hiện mật khẩu';
+  static const hidePassword = 'Ẩn mật khẩu';
+  static const register = 'Đăng ký';
+  static const forgotPassword = 'Quên mật khẩu?';
+  static const done = 'Xong';
+  static const cancel = 'Hủy';
+
+  static const createAccount = 'Tạo tài khoản';
+  static const registerSubtitle = 'Dùng email để lưu lịch hẹn của bạn.';
+  static const confirmPassword = 'Xác nhận mật khẩu';
+  static const confirmPasswordRequired = 'Nhập lại mật khẩu.';
+  static const passwordMismatch = 'Hai mật khẩu chưa khớp.';
+  static const passwordTooShort = 'Mật khẩu cần ít nhất 6 ký tự.';
+
+  static const resetPassword = 'Đặt lại mật khẩu';
+  static const resetPasswordSubtitle =
+      'Nhập email bạn dùng để đăng ký tài khoản.';
+  static const sendResetLink = 'Gửi liên kết đặt lại mật khẩu';
+
+  static const settings = 'Cài đặt';
+  static const settingsAccount = 'Tài khoản';
+  static const signOut = 'Đăng xuất';
+  static const signOutConfirmation = 'Bạn có muốn đăng xuất khỏi ứng dụng?';
+  static const resetSent =
+      'Nếu email đã đăng ký, hãy kiểm tra hộp thư để đặt lại mật khẩu.';
+  static const authError = 'Không thể thực hiện thao tác. Vui lòng thử lại.';
+  static const firebaseStartupError =
+      'Không thể khởi động Firebase. Hãy kiểm tra kết nối và mở lại ứng dụng.';
+  static const authNetworkError =
+      'Không có kết nối. Hãy kiểm tra mạng và thử lại.';
+  static const authRateLimited =
+      'Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.';
+  static const authInvalidCredentials = 'Email hoặc mật khẩu chưa đúng.';
+  static const authEmailInUse = 'Email này đã được dùng để đăng ký.';
+  static const authAccountDisabled = 'Tài khoản này đã bị vô hiệu hóa.';
+  static const authWeakPassword = 'Mật khẩu chưa đáp ứng yêu cầu bảo mật.';
+
+  static const saveAppointment = 'Lưu lịch hẹn';
+  static const appointmentSaved = 'Đã lưu lịch hẹn.';
+  static const appointmentSaveError =
+      'Không thể lưu lịch hẹn. Vui lòng thử lại.';
+  static const appointmentsLoadError = 'Không thể tải lịch hẹn.';
+  static const retry = 'Thử lại';
+  static const appointmentTitleRequired = 'Nhập tiêu đề lịch hẹn.';
+  static const appointmentDateTimeRequired = 'Chọn ngày và giờ hẹn.';
+  static const appointmentMustBeFuture = 'Chọn thời điểm trong tương lai.';
+  static const appointmentPending = 'Đang chờ đồng bộ.';
+
+  static const appointmentDetails = 'Chi tiết lịch hẹn';
+  static const editAppointment = 'Sửa lịch hẹn';
+  static const appointmentUpdated = 'Đã cập nhật lịch hẹn.';
+  static const appointmentUnavailable = 'Lịch hẹn không còn khả dụng.';
+
+  static const delete = 'Xóa';
+  static const deleteAppointment = 'Xóa lịch hẹn';
+  static const deleteAppointmentConfirmation =
+      'Bạn có muốn xóa lịch hẹn này? Lịch đã xóa không thể khôi phục.';
+  static const appointmentDeleted = 'Đã xóa lịch hẹn.';
+  static const appointmentDeleteError =
+      'Không thể xóa lịch hẹn. Vui lòng thử lại.';
+
+  static const appointmentUpcoming = 'Sắp diễn ra';
+  static const appointmentCompleted = 'Đã hoàn thành';
+  static const appointmentCanceled = 'Đã hủy';
+  static const completeAppointment = 'Đánh dấu hoàn thành';
+  static const cancelAppointment = 'Hủy lịch hẹn';
+  static const cancelAppointmentConfirmation =
+      'Lịch hẹn sẽ được đánh dấu Đã hủy và vẫn xuất hiện trong danh sách.';
+  static const keepAppointment = 'Giữ lịch hẹn';
+  static const appointmentStatusError =
+      'Không thể cập nhật trạng thái. Vui lòng thử lại.';
+
+  static const searchAppointments = 'Tìm theo tiêu đề';
+  static const filterStatus = 'Lọc theo trạng thái';
+  static const allStatuses = 'Tất cả trạng thái';
+  static const noAppointmentMatches = 'Không có lịch hẹn phù hợp.';
+
+  static String statusLabel(AppointmentStatus? status) => switch (status) {
+    AppointmentStatus.upcoming => appointmentUpcoming,
+    AppointmentStatus.completed => appointmentCompleted,
+    AppointmentStatus.canceled => appointmentCanceled,
+    null => allStatuses,
+  };
+
+  static String statusFilterLabel(AppointmentStatus? status) =>
+      '$filterStatus · ${statusLabel(status)}';
+
+  static String appointmentsOnDay(int count) => '$count lịch hẹn trong ngày';
+
+  static const appointmentConflictTitle = 'Trùng giờ hẹn';
+  static const appointmentConflictMessage =
+      'Bạn đã có một lịch hẹn vào thời điểm này. Bạn vẫn muốn lưu?';
+  static const appointmentChooseAnotherTime = 'Chọn giờ khác';
+  static const appointmentSaveAnyway = 'Vẫn lưu';
+  static const appointmentConflictNetworkError =
+      'Không thể kết nối Firestore. Kiểm tra mạng rồi thử lại.';
+
+  static const appointmentsAwaitingServer =
+      'Đang chờ Firestore xác nhận dữ liệu. Nếu mất mạng, hãy kết nối lại.';
+  static const appointmentsCached =
+      'Đang hiển thị dữ liệu đã lưu trên thiết bị. Danh sách có thể chưa cập nhật.';
 
   static String formatDate(DateTime date) =>
       DateFormat.yMMMMd('vi').format(date);
