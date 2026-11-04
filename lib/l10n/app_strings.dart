@@ -19,6 +19,22 @@ abstract final class AppStrings {
   static const formPreview =
       'Bạn có thể nhập thông tin và chọn ngày giờ ở bản này.';
 
+  static const login = 'Đăng nhập';
+  static const loginSubtitle = 'Quản lý lịch hẹn của bạn ở một nơi.';
+  static const email = 'Email';
+  static const password = 'Mật khẩu';
+  static const emailRequired = 'Nhập địa chỉ email.';
+  static const emailInvalid = 'Địa chỉ email chưa đúng định dạng.';
+  static const passwordRequired = 'Nhập mật khẩu.';
+  static const showPassword = 'Hiện mật khẩu';
+  static const hidePassword = 'Ẩn mật khẩu';
+  static const register = 'Đăng ký';
+  static const forgotPassword = 'Quên mật khẩu?';
+  static const preview = 'Xem trước giao diện lịch hẹn';
+  static const authPreview = 'Tính năng tài khoản sẽ có khi kết nối Firebase.';
+  static const done = 'Xong';
+  static const cancel = 'Hủy';
+
   static String formatDate(DateTime date) =>
       DateFormat.yMMMMd('vi').format(date);
 }

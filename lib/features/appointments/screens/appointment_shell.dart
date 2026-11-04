@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_strings.dart';
+import '../../../core/widgets/date_time_sheet.dart';
 import '../widgets/appointment_empty_state.dart';
 import 'appointment_form.dart';
 
@@ -19,11 +20,11 @@ class _AppointmentShellState extends State<AppointmentShell> {
   DateTime _day = DateUtils.dateOnly(DateTime.now());
 
   Future<void> _pickDay() async {
-    final day = await showDatePicker(
+    final day = await showDateTimeSheet(
       context: context,
-      initialDate: _day,
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2200),
+      initial: _day,
+      minimumDate: DateTime(1900),
+      maximumDate: DateTime(2200),
     );
     if (mounted && day != null) setState(() => _day = day);
   }
@@ -43,8 +44,8 @@ class _AppointmentShellState extends State<AppointmentShell> {
         bottom: false,
         child: CustomScrollView(
           slivers: [
-            SliverAppBar.large(
-              title: Text(
+            CupertinoSliverNavigationBar(
+              largeTitle: Text(
                 isCalendar ? AppStrings.calendar : AppStrings.appName,
               ),
             ),
@@ -60,20 +61,18 @@ class _AppointmentShellState extends State<AppointmentShell> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         if (isCalendar) ...[
-                          OutlinedButton.icon(
+                          CupertinoButton.tinted(
                             onPressed: _pickDay,
-                            icon: const Icon(CupertinoIcons.calendar),
-                            label: Text(AppStrings.formatDate(_day)),
+                            child: Text(AppStrings.formatDate(_day)),
                           ),
                           const SizedBox(height: AppTheme.medium),
                         ],
                         AppointmentEmptyState(isCalendar: isCalendar),
                         const SizedBox(height: AppTheme.medium),
                         if (!isCalendar)
-                          FilledButton.icon(
+                          CupertinoButton.filled(
                             onPressed: _openForm,
-                            icon: const Icon(CupertinoIcons.add),
-                            label: const Text(AppStrings.addAppointment),
+                            child: const Text(AppStrings.addAppointment),
                           ),
                       ],
                     ),
@@ -84,19 +83,19 @@ class _AppointmentShellState extends State<AppointmentShell> {
           ],
         ),
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _tab,
-        onDestinationSelected: (index) {
+      bottomNavigationBar: CupertinoTabBar(
+        currentIndex: _tab,
+        onTap: (index) {
           if (index == _tab) return;
           HapticFeedback.selectionClick();
           setState(() => _tab = index);
         },
-        destinations: const [
-          NavigationDestination(
+        items: const [
+          BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.list_bullet),
             label: AppStrings.appName,
           ),
-          NavigationDestination(
+          BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.calendar),
             label: AppStrings.calendar,
           ),

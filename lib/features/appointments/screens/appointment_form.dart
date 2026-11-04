@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/date_time_sheet.dart';
 import '../../../l10n/app_strings.dart';
 
 class AppointmentForm extends StatefulWidget {
@@ -17,30 +18,38 @@ class _AppointmentFormState extends State<AppointmentForm> {
 
   Future<void> _pickDate() async {
     final today = DateUtils.dateOnly(DateTime.now());
-    final selected = await showDatePicker(
+    final date = _date;
+    final selected = await showDateTimeSheet(
       context: context,
-      initialDate: _date != null && !_date!.isBefore(today) ? _date : today,
-      firstDate: today,
-      lastDate: DateTime(2200),
+      initial: date != null && !date.isBefore(today) ? date : today,
+      minimumDate: today,
+      maximumDate: DateTime(2200),
     );
     if (mounted && selected != null) setState(() => _date = selected);
   }
 
   Future<void> _pickTime() async {
-    final selected = await showTimePicker(
+    final now = DateTime.now();
+    final time = _time ?? TimeOfDay.fromDateTime(now);
+    final selected = await showDateTimeSheet(
       context: context,
-      initialTime: _time ?? TimeOfDay.now(),
+      initial: DateTime(now.year, now.month, now.day, time.hour, time.minute),
+      mode: CupertinoDatePickerMode.time,
     );
-    if (mounted && selected != null) setState(() => _time = selected);
+    if (mounted && selected != null) {
+      setState(() => _time = TimeOfDay.fromDateTime(selected));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final date = _date;
     final time = _time;
-    return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.addAppointment)),
-      body: SafeArea(
+    return CupertinoPageScaffold(
+      navigationBar: const CupertinoNavigationBar(
+        middle: Text(AppStrings.addAppointment),
+      ),
+      child: SafeArea(
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: AppTheme.contentWidth),
@@ -49,35 +58,39 @@ class _AppointmentFormState extends State<AppointmentForm> {
               children: [
                 const Text(AppStrings.formPreview),
                 const SizedBox(height: AppTheme.medium),
-                const TextField(
-                  decoration: InputDecoration(labelText: AppStrings.title),
+                const CupertinoTextField(
+                  placeholder: AppStrings.title,
+                  decoration: AppTheme.field,
+                  padding: EdgeInsets.all(AppTheme.medium),
                 ),
                 const SizedBox(height: AppTheme.medium),
-                const TextField(
-                  decoration: InputDecoration(labelText: AppStrings.notes),
+                const CupertinoTextField(
+                  placeholder: AppStrings.notes,
+                  decoration: AppTheme.field,
+                  padding: EdgeInsets.all(AppTheme.medium),
                   minLines: 3,
                   maxLines: 5,
                 ),
                 const SizedBox(height: AppTheme.medium),
-                OutlinedButton.icon(
+                CupertinoButton.tinted(
                   onPressed: _pickDate,
-                  icon: const Icon(CupertinoIcons.calendar),
-                  label: Text(
+                  child: Text(
                     date == null
                         ? AppStrings.chooseDate
                         : AppStrings.formatDate(date),
                   ),
                 ),
-                OutlinedButton.icon(
+                CupertinoButton.tinted(
                   onPressed: _pickTime,
-                  icon: const Icon(CupertinoIcons.clock),
-                  label: Text(
+                  child: Text(
                     time == null ? AppStrings.chooseTime : time.format(context),
                   ),
                 ),
                 const SizedBox(height: AppTheme.medium),
-                const TextField(
-                  decoration: InputDecoration(labelText: AppStrings.location),
+                const CupertinoTextField(
+                  placeholder: AppStrings.location,
+                  decoration: AppTheme.field,
+                  padding: EdgeInsets.all(AppTheme.medium),
                 ),
               ],
             ),
