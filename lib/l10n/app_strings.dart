@@ -42,6 +42,11 @@ abstract final class AppStrings {
   static const passwordMismatch = 'Hai mật khẩu chưa khớp.';
   static const passwordTooShort = 'Mật khẩu cần ít nhất 6 ký tự.';
 
+  static const resetPassword = 'Đặt lại mật khẩu';
+  static const resetPasswordSubtitle =
+      'Nhập email bạn dùng để đăng ký tài khoản.';
+  static const sendResetLink = 'Gửi liên kết đặt lại mật khẩu';
+
   static String formatDate(DateTime date) =>
       DateFormat.yMMMMd('vi').format(date);
 }

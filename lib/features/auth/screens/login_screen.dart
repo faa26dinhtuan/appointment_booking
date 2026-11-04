@@ -6,6 +6,7 @@ import '../../../l10n/app_strings.dart';
 import '../../appointments/screens/appointment_shell.dart';
 import '../auth_validation.dart';
 import 'register_screen.dart';
+import 'reset_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -145,8 +146,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: const Text(AppStrings.register),
                     ),
                     CupertinoButton(
-                      onPressed: () =>
-                          _showPreviewNotice(AppStrings.forgotPassword),
+                      onPressed: () => Navigator.of(context).push<void>(
+                        CupertinoPageRoute(
+                          builder: (_) => const ResetPasswordScreen(),
+                        ),
+                      ),
                       child: const Text(AppStrings.forgotPassword),
                     ),
                   ],
