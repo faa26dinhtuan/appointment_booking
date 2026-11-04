@@ -10,27 +10,30 @@ class AppointmentsRepository {
   CollectionReference<Map<String, dynamic>> _appointments(String uid) =>
       _firestore.collection('users').doc(uid).collection('appointments');
 
-  Stream<List<Appointment>> watch(String uid) {
+  Stream<AppointmentSnapshot> watch(String uid) {
     return _appointments(uid)
         .orderBy('startsAt')
         .snapshots(includeMetadataChanges: true)
         .map(
-          (snapshot) => [
-            for (final document in snapshot.docs)
-              Appointment(
-                id: document.id,
-                title: document['title'] as String,
-                notes: document['notes'] as String,
-                location: document['location'] as String,
-                startsAt: (document['startsAt'] as Timestamp)
-                    .toDate()
-                    .toLocal(),
-                status: AppointmentStatus.fromStorage(
-                  document.data()['status'],
+          (snapshot) => (
+            isFromCache: snapshot.metadata.isFromCache,
+            items: [
+              for (final document in snapshot.docs)
+                Appointment(
+                  id: document.id,
+                  title: document['title'] as String,
+                  notes: document['notes'] as String,
+                  location: document['location'] as String,
+                  startsAt: (document['startsAt'] as Timestamp)
+                      .toDate()
+                      .toLocal(),
+                  status: AppointmentStatus.fromStorage(
+                    document.data()['status'],
+                  ),
+                  pending: document.metadata.hasPendingWrites,
                 ),
-                pending: document.metadata.hasPendingWrites,
-              ),
-          ],
+            ],
+          ),
         );
   }
 

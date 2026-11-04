@@ -145,16 +145,28 @@ class _AppointmentDetailScreenState
                     ),
                   ],
                 ),
-                data: (items) {
+                data: (snapshot) {
+                  final items = snapshot.items;
                   final appointment = items
                       .where((item) => item.id == widget.appointmentId)
                       .firstOrNull;
                   if (appointment == null) {
-                    return const Text(AppStrings.appointmentUnavailable);
+                    return Text(
+                      snapshot.isFromCache
+                          ? AppStrings.appointmentsAwaitingServer
+                          : AppStrings.appointmentUnavailable,
+                    );
                   }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      if (snapshot.isFromCache) ...[
+                        const Text(
+                          AppStrings.appointmentsCached,
+                          style: TextStyle(color: AppTheme.muted),
+                        ),
+                        const SizedBox(height: AppTheme.medium),
+                      ],
                       DecoratedBox(
                         decoration: AppTheme.card,
                         child: Padding(

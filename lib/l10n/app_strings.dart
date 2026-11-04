@@ -120,6 +120,11 @@ abstract final class AppStrings {
   static const appointmentConflictNetworkError =
       'Không thể kết nối Firestore. Kiểm tra mạng rồi thử lại.';
 
+  static const appointmentsAwaitingServer =
+      'Đang chờ Firestore xác nhận dữ liệu. Nếu mất mạng, hãy kết nối lại.';
+  static const appointmentsCached =
+      'Đang hiển thị dữ liệu đã lưu trên thiết bị. Danh sách có thể chưa cập nhật.';
+
   static String formatDate(DateTime date) =>
       DateFormat.yMMMMd('vi').format(date);
 }

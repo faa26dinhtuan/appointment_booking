@@ -9,6 +9,6 @@ final appointmentsRepositoryProvider = Provider<AppointmentsRepository>(
 );
 
 final appointmentsProvider = StreamProvider.autoDispose
-    .family<List<Appointment>, String>(
+    .family<AppointmentSnapshot, String>(
       (ref, uid) => ref.watch(appointmentsRepositoryProvider).watch(uid),
     );

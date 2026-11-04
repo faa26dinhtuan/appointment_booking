@@ -29,3 +29,5 @@ class Appointment {
   final bool pending;
   final AppointmentStatus status;
 }
+
+typedef AppointmentSnapshot = ({List<Appointment> items, bool isFromCache});

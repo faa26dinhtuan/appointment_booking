@@ -86,7 +86,8 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
               ),
             ],
           ),
-          data: (appointments) {
+          data: (snapshot) {
+            final appointments = snapshot.items;
             final byDay = day == null
                 ? appointments
                 : appointments
@@ -102,7 +103,19 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (day != null) ...[
+                if (snapshot.isFromCache) ...[
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      byDay.isEmpty
+                          ? AppStrings.appointmentsAwaitingServer
+                          : AppStrings.appointmentsCached,
+                      style: const TextStyle(color: AppTheme.muted),
+                    ),
+                  ),
+                  const SizedBox(height: AppTheme.small),
+                ],
+                if (day != null && !snapshot.isFromCache) ...[
                   Text(AppStrings.appointmentsOnDay(byDay.length)),
                   const SizedBox(height: AppTheme.small),
                 ],
@@ -119,9 +132,9 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
                     child: Text(AppStrings.statusFilterLabel(_status)),
                   ),
                 ),
-                if (byDay.isEmpty)
+                if (byDay.isEmpty && !snapshot.isFromCache)
                   AppointmentEmptyState(isCalendar: day != null)
-                else if (visible.isEmpty)
+                else if (byDay.isNotEmpty && visible.isEmpty)
                   const Padding(
                     padding: EdgeInsets.all(AppTheme.medium),
                     child: Text(
