@@ -18,6 +18,7 @@ class AppointmentsRepository {
           (snapshot) => [
             for (final document in snapshot.docs)
               Appointment(
+                id: document.id,
                 title: document['title'] as String,
                 notes: document['notes'] as String,
                 location: document['location'] as String,
@@ -30,18 +31,23 @@ class AppointmentsRepository {
         );
   }
 
-  Future<void> create({
+  Future<void> save({
+    String? id,
     required String uid,
     required String title,
     required String notes,
     required String location,
     required DateTime startsAt,
   }) {
-    return _appointments(uid).doc().set({
+    final fields = <String, dynamic>{
       'title': title,
       'notes': notes,
       'location': location,
       'startsAt': Timestamp.fromDate(startsAt),
-    });
+    };
+    final collection = _appointments(uid);
+    return id == null
+        ? collection.doc().set(fields)
+        : collection.doc(id).update(fields);
   }
 }

@@ -5,14 +5,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/date_time_sheet.dart';
+import '../../../data/models/appointment.dart';
 import '../../../l10n/app_strings.dart';
 
 import '../controllers/appointments_controller.dart';
 
 class AppointmentForm extends ConsumerStatefulWidget {
-  const AppointmentForm({required this.uid, super.key});
+  const AppointmentForm({required this.uid, this.appointment, super.key});
 
   final String uid;
+  final Appointment? appointment;
 
   @override
   ConsumerState<AppointmentForm> createState() => _AppointmentFormState();
@@ -26,6 +28,18 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
   String? _error;
   DateTime? _date;
   TimeOfDay? _time;
+
+  @override
+  void initState() {
+    super.initState();
+    final appointment = widget.appointment;
+    if (appointment == null) return;
+    _title.text = appointment.title;
+    _notes.text = appointment.notes;
+    _location.text = appointment.location;
+    _date = DateUtils.dateOnly(appointment.startsAt);
+    _time = TimeOfDay.fromDateTime(appointment.startsAt);
+  }
 
   Future<void> _pickDate() async {
     final today = DateUtils.dateOnly(DateTime.now());
@@ -73,14 +87,21 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
       setState(() => _error = AppStrings.appointmentDateTimeRequired);
       return;
     }
-    final startsAt = DateTime(
+    final selected = DateTime(
       date.year,
       date.month,
       date.day,
       time.hour,
       time.minute,
     );
-    if (!startsAt.isAfter(DateTime.now())) {
+    final original = widget.appointment?.startsAt;
+    final sameTime =
+        original != null &&
+        DateUtils.isSameDay(original, selected) &&
+        original.hour == selected.hour &&
+        original.minute == selected.minute;
+    final startsAt = sameTime ? original : selected;
+    if (!sameTime && !startsAt.isAfter(DateTime.now())) {
       setState(() => _error = AppStrings.appointmentMustBeFuture);
       return;
     }
@@ -93,7 +114,8 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
     try {
       await ref
           .read(appointmentsRepositoryProvider)
-          .create(
+          .save(
+            id: widget.appointment?.id,
             uid: widget.uid,
             title: title,
             notes: _notes.text.trim(),
@@ -118,8 +140,12 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
     final time = _time;
     final error = _error;
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text(AppStrings.addAppointment),
+      navigationBar: CupertinoNavigationBar(
+        middle: Text(
+          widget.appointment == null
+              ? AppStrings.addAppointment
+              : AppStrings.editAppointment,
+        ),
       ),
       child: SafeArea(
         child: Center(

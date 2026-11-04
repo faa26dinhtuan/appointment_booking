@@ -12,11 +12,15 @@ service cloud.firestore {
         return data.keys().hasAll(fields) && data.keys().hasOnly(fields)
           && data.title is string && data.title.size() > 0
           && data.notes is string && data.location is string
-          && data.startsAt is timestamp && data.startsAt > request.time;
+          && data.startsAt is timestamp;
       }
 
       allow read: if isOwner();
-      allow create: if isOwner() && validAppointment();
+      allow create: if isOwner() && validAppointment()
+        && request.resource.data.startsAt > request.time;
+      allow update: if isOwner() && validAppointment()
+        && (request.resource.data.startsAt == resource.data.startsAt
+          || request.resource.data.startsAt > request.time);
     }
   }
 }

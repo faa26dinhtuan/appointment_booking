@@ -69,6 +69,11 @@ abstract final class AppStrings {
   static const appointmentMustBeFuture = 'Chọn thời điểm trong tương lai.';
   static const appointmentPending = 'Đang chờ đồng bộ.';
 
+  static const appointmentDetails = 'Chi tiết lịch hẹn';
+  static const editAppointment = 'Sửa lịch hẹn';
+  static const appointmentUpdated = 'Đã cập nhật lịch hẹn.';
+  static const appointmentUnavailable = 'Lịch hẹn không còn khả dụng.';
+
   static String formatDate(DateTime date) =>
       DateFormat.yMMMMd('vi').format(date);
 }

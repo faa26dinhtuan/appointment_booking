@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_strings.dart';
 import '../controllers/appointments_controller.dart';
+import '../screens/appointment_detail_screen.dart';
 import 'appointment_empty_state.dart';
 
 class AppointmentList extends ConsumerWidget {
@@ -46,32 +47,45 @@ class AppointmentList extends ConsumerWidget {
                 for (final appointment in visible)
                   Padding(
                     padding: const EdgeInsets.only(bottom: AppTheme.medium),
-                    child: DecoratedBox(
-                      decoration: AppTheme.card,
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppTheme.medium),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              appointment.title,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
+                    child: CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () => Navigator.of(context).push<void>(
+                        CupertinoPageRoute(
+                          builder: (_) => AppointmentDetailScreen(
+                            uid: uid,
+                            appointmentId: appointment.id,
+                          ),
+                        ),
+                      ),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: AppTheme.card,
+                        child: Padding(
+                          padding: const EdgeInsets.all(AppTheme.medium),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                appointment.title,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: AppTheme.ink,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: AppTheme.small),
-                            Text(AppStrings.formatDate(appointment.startsAt)),
-                            Text(
-                              TimeOfDay.fromDateTime(appointment.startsAt)
-                                  .format(context),
-                            ),
-                            if (appointment.location.isNotEmpty)
-                              Text(appointment.location),
-                            if (appointment.notes.isNotEmpty)
-                              Text(appointment.notes),
-                            if (appointment.pending)
-                              const Text(AppStrings.appointmentPending),
-                          ],
+                              const SizedBox(height: AppTheme.small),
+                              Text(AppStrings.formatDate(appointment.startsAt)),
+                              Text(
+                                TimeOfDay.fromDateTime(appointment.startsAt)
+                                    .format(context),
+                              ),
+                              if (appointment.location.isNotEmpty)
+                                Text(appointment.location),
+                              if (appointment.notes.isNotEmpty)
+                                Text(appointment.notes),
+                              if (appointment.pending)
+                                const Text(AppStrings.appointmentPending),
+                            ],
+                          ),
                         ),
                       ),
                     ),
