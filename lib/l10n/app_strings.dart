@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
+import '../data/models/appointment.dart';
+
 abstract final class AppStrings {
   static const locale = Locale('vi');
   static const appName = 'Lịch hẹn';
@@ -92,6 +94,23 @@ abstract final class AppStrings {
   static const keepAppointment = 'Giữ lịch hẹn';
   static const appointmentStatusError =
       'Không thể cập nhật trạng thái. Vui lòng thử lại.';
+
+  static const searchAppointments = 'Tìm theo tiêu đề';
+  static const filterStatus = 'Lọc theo trạng thái';
+  static const allStatuses = 'Tất cả trạng thái';
+  static const noAppointmentMatches = 'Không có lịch hẹn phù hợp.';
+
+  static String statusLabel(AppointmentStatus? status) => switch (status) {
+    AppointmentStatus.upcoming => appointmentUpcoming,
+    AppointmentStatus.completed => appointmentCompleted,
+    AppointmentStatus.canceled => appointmentCanceled,
+    null => allStatuses,
+  };
+
+  static String statusFilterLabel(AppointmentStatus? status) =>
+      '$filterStatus · ${statusLabel(status)}';
+
+  static String appointmentsOnDay(int count) => '$count lịch hẹn trong ngày';
 
   static String formatDate(DateTime date) =>
       DateFormat.yMMMMd('vi').format(date);
