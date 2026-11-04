@@ -1,45 +1,56 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_strings.dart';
 import '../auth_validation.dart';
+import '../controllers/auth_controller.dart';
+import '../widgets/auth_notice.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _form = GlobalKey<FormState>();
+  final _email = TextEditingController();
+  bool _busy = false;
   final _password = TextEditingController();
   bool _obscure = true;
 
   @override
   void dispose() {
+    _email.dispose();
     _password.dispose();
     super.dispose();
   }
 
-  void _submit() {
-    if (!_form.currentState!.validate()) return;
+  Future<void> _submit() async {
+    if (_busy || !_form.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
     HapticFeedback.lightImpact();
-    showCupertinoDialog<void>(
-      context: context,
-      builder: (context) => CupertinoAlertDialog(
-        title: const Text(AppStrings.register),
-        content: const Text(AppStrings.authPreview),
-        actions: [
-          CupertinoDialogAction(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(AppStrings.done),
-          ),
-        ],
-      ),
-    );
+    setState(() => _busy = true);
+    final controller = ref.read(authControllerProvider);
+    try {
+      await controller.register(_email.text.trim(), _password.text);
+      if (mounted && ModalRoute.of(context)?.isCurrent == true) {
+        Navigator.of(context).pop();
+      }
+    } catch (error) {
+      if (mounted) {
+        await showAuthNotice(
+          context,
+          AppStrings.register,
+          authErrorMessage(error),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   @override
@@ -81,6 +92,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           CupertinoTextFormFieldRow(
+                            controller: _email,
                             placeholder: AppStrings.email,
                             decoration: AppTheme.field,
                             padding: const EdgeInsets.all(AppTheme.small),
@@ -133,8 +145,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           CupertinoButton.filled(
                             borderRadius: AppTheme.corners,
-                            onPressed: _submit,
-                            child: const Text(AppStrings.register),
+                            onPressed: _busy ? null : _submit,
+                            child: _busy
+                                ? const CupertinoActivityIndicator()
+                                : const Text(
+                                    AppStrings.register,
+                                    textAlign: TextAlign.center,
+                                  ),
                           ),
                         ],
                       ),

@@ -30,8 +30,6 @@ abstract final class AppStrings {
   static const hidePassword = 'Ẩn mật khẩu';
   static const register = 'Đăng ký';
   static const forgotPassword = 'Quên mật khẩu?';
-  static const preview = 'Xem trước giao diện lịch hẹn';
-  static const authPreview = 'Tính năng tài khoản sẽ có khi kết nối Firebase.';
   static const done = 'Xong';
   static const cancel = 'Hủy';
 
@@ -46,6 +44,21 @@ abstract final class AppStrings {
   static const resetPasswordSubtitle =
       'Nhập email bạn dùng để đăng ký tài khoản.';
   static const sendResetLink = 'Gửi liên kết đặt lại mật khẩu';
+
+  static const signOut = 'Đăng xuất';
+  static const resetSent =
+      'Nếu email đã đăng ký, hãy kiểm tra hộp thư để đặt lại mật khẩu.';
+  static const authError = 'Không thể thực hiện thao tác. Vui lòng thử lại.';
+  static const firebaseStartupError =
+      'Không thể khởi động Firebase. Hãy kiểm tra kết nối và mở lại ứng dụng.';
+  static const authNetworkError =
+      'Không có kết nối. Hãy kiểm tra mạng và thử lại.';
+  static const authRateLimited =
+      'Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.';
+  static const authInvalidCredentials = 'Email hoặc mật khẩu chưa đúng.';
+  static const authEmailInUse = 'Email này đã được dùng để đăng ký.';
+  static const authAccountDisabled = 'Tài khoản này đã bị vô hiệu hóa.';
+  static const authWeakPassword = 'Mật khẩu chưa đáp ứng yêu cầu bảo mật.';
 
   static String formatDate(DateTime date) =>
       DateFormat.yMMMMd('vi').format(date);

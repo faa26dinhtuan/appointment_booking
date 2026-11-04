@@ -1,37 +1,58 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_strings.dart';
 import '../auth_validation.dart';
+import '../controllers/auth_controller.dart';
+import '../widgets/auth_notice.dart';
 
-class ResetPasswordScreen extends StatefulWidget {
+class ResetPasswordScreen extends ConsumerStatefulWidget {
   const ResetPasswordScreen({super.key});
 
   @override
-  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+  ConsumerState<ResetPasswordScreen> createState() =>
+      _ResetPasswordScreenState();
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   final _form = GlobalKey<FormState>();
+  final _email = TextEditingController();
+  bool _busy = false;
 
-  void _submit() {
-    if (!_form.currentState!.validate()) return;
+  @override
+  void dispose() {
+    _email.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (_busy || !_form.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
     HapticFeedback.lightImpact();
-    showCupertinoDialog<void>(
-      context: context,
-      builder: (dialogContext) => CupertinoAlertDialog(
-        title: const Text(AppStrings.resetPassword),
-        content: const Text(AppStrings.authPreview),
-        actions: [
-          CupertinoDialogAction(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(AppStrings.done),
-          ),
-        ],
-      ),
-    );
+    setState(() => _busy = true);
+    final controller = ref.read(authControllerProvider);
+    try {
+      await controller.resetPassword(_email.text.trim());
+      if (mounted) {
+        await showAuthNotice(
+          context,
+          AppStrings.resetPassword,
+          AppStrings.resetSent,
+        );
+      }
+    } catch (error) {
+      if (mounted) {
+        await showAuthNotice(
+          context,
+          AppStrings.resetPassword,
+          authErrorMessage(error),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   @override
@@ -79,6 +100,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           CupertinoTextFormFieldRow(
+                            controller: _email,
                             placeholder: AppStrings.email,
                             decoration: AppTheme.field,
                             padding: const EdgeInsets.all(AppTheme.small),
@@ -91,11 +113,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           const SizedBox(height: AppTheme.small),
                           CupertinoButton.filled(
                             borderRadius: AppTheme.corners,
-                            onPressed: _submit,
-                            child: const Text(
-                              AppStrings.sendResetLink,
-                              textAlign: TextAlign.center,
-                            ),
+                            onPressed: _busy ? null : _submit,
+                            child: _busy
+                                ? const CupertinoActivityIndicator()
+                                : const Text(
+                                    AppStrings.sendResetLink,
+                                    textAlign: TextAlign.center,
+                                  ),
                           ),
                         ],
                       ),

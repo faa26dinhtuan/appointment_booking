@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "926543050247",
+    "project_id": "appointment-booking-ac2ff",
+    "storage_bucket": "appointment-booking-ac2ff.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:926543050247:android:d48b3f0aaff2ff75ebdca2",
+        "android_client_info": {
+          "package_name": "com.example.appointment_booking"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1b7y2Kq6pE3lgGYmwJBXnbG5V4XMILD4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

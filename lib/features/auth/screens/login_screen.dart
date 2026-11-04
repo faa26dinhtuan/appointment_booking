@@ -1,45 +1,55 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_strings.dart';
-import '../../appointments/screens/appointment_shell.dart';
 import '../auth_validation.dart';
+import '../controllers/auth_controller.dart';
+import '../widgets/auth_notice.dart';
 import 'register_screen.dart';
 import 'reset_password_screen.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _form = GlobalKey<FormState>();
+  final _email = TextEditingController();
+  bool _busy = false;
+  final _password = TextEditingController();
   bool _obscure = true;
 
-  void _showPreviewNotice(String title) {
-    showCupertinoDialog<void>(
-      context: context,
-      builder: (context) => CupertinoAlertDialog(
-        title: Text(title),
-        content: const Text(AppStrings.authPreview),
-        actions: [
-          CupertinoDialogAction(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(AppStrings.done),
-          ),
-        ],
-      ),
-    );
+  @override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
   }
 
-  void _submit() {
-    if (!_form.currentState!.validate()) return;
+  Future<void> _submit() async {
+    if (_busy || !_form.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
     HapticFeedback.lightImpact();
-    _showPreviewNotice(AppStrings.login);
+    setState(() => _busy = true);
+    final controller = ref.read(authControllerProvider);
+    try {
+      await controller.signIn(_email.text.trim(), _password.text);
+    } catch (error) {
+      if (mounted) {
+        await showAuthNotice(
+          context,
+          AppStrings.login,
+          authErrorMessage(error),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   @override
@@ -86,6 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             CupertinoTextFormFieldRow(
+                              controller: _email,
                               placeholder: AppStrings.email,
                               decoration: AppTheme.field,
                               padding: const EdgeInsets.all(AppTheme.small),
@@ -96,6 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               validator: AuthValidation.email,
                             ),
                             CupertinoTextFormFieldRow(
+                              controller: _password,
                               placeholder: AppStrings.password,
                               decoration: AppTheme.field,
                               padding: const EdgeInsets.all(AppTheme.small),
@@ -124,8 +136,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             CupertinoButton.filled(
                               borderRadius: AppTheme.corners,
-                              onPressed: _submit,
-                              child: const Text(AppStrings.login),
+                              onPressed: _busy ? null : _submit,
+                              child: _busy
+                                  ? const CupertinoActivityIndicator()
+                                  : const Text(
+                                      AppStrings.login,
+                                      textAlign: TextAlign.center,
+                                    ),
                             ),
                           ],
                         ),
@@ -138,33 +155,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   alignment: WrapAlignment.center,
                   children: [
                     CupertinoButton(
-                      onPressed: () => Navigator.of(context).push<void>(
-                        CupertinoPageRoute(
-                          builder: (_) => const RegisterScreen(),
-                        ),
-                      ),
+                      onPressed: _busy
+                          ? null
+                          : () => Navigator.of(context).push<void>(
+                              CupertinoPageRoute(
+                                builder: (_) => const RegisterScreen(),
+                              ),
+                            ),
                       child: const Text(AppStrings.register),
                     ),
                     CupertinoButton(
-                      onPressed: () => Navigator.of(context).push<void>(
-                        CupertinoPageRoute(
-                          builder: (_) => const ResetPasswordScreen(),
-                        ),
-                      ),
+                      onPressed: _busy
+                          ? null
+                          : () => Navigator.of(context).push<void>(
+                              CupertinoPageRoute(
+                                builder: (_) => const ResetPasswordScreen(),
+                              ),
+                            ),
                       child: const Text(AppStrings.forgotPassword),
                     ),
                   ],
-                ),
-                CupertinoButton(
-                  onPressed: () => Navigator.of(context).push<void>(
-                    CupertinoPageRoute(
-                      builder: (_) => const AppointmentShell(),
-                    ),
-                  ),
-                  child: const Text(
-                    AppStrings.preview,
-                    textAlign: TextAlign.center,
-                  ),
                 ),
               ],
             ),
