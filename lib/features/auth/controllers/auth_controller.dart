@@ -8,7 +8,7 @@ final authControllerProvider = Provider<AuthRepository>(
   (ref) => AuthRepository(FirebaseAuth.instance),
 );
 
-final authSessionProvider = StreamProvider<bool>(
+final authSessionProvider = StreamProvider<String?>(
   (ref) => ref.watch(authControllerProvider).sessionChanges(),
 );
 

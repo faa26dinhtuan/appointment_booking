@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid}/appointments/{appointmentId} {
+      function isOwner() {
+        return request.auth != null && request.auth.uid == uid;
+      }
+
+      function validAppointment() {
+        let data = request.resource.data;
+        let fields = ['title', 'notes', 'location', 'startsAt'];
+        return data.keys().hasAll(fields) && data.keys().hasOnly(fields)
+          && data.title is string && data.title.size() > 0
+          && data.notes is string && data.location is string
+          && data.startsAt is timestamp && data.startsAt > request.time;
+      }
+
+      allow read: if isOwner();
+      allow create: if isOwner() && validAppointment();
+    }
+  }
+}

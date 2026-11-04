@@ -5,8 +5,8 @@ class AuthRepository {
 
   final FirebaseAuth _auth;
 
-  Stream<bool> sessionChanges() =>
-      _auth.authStateChanges().map((user) => user != null);
+  Stream<String?> sessionChanges() =>
+      _auth.authStateChanges().map((user) => user?.uid);
 
   Future<void> signIn(String email, String password) async {
     await _auth.signInWithEmailAndPassword(email: email, password: password);

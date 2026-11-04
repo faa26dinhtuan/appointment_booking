@@ -6,13 +6,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_strings.dart';
 import '../../../core/widgets/date_time_sheet.dart';
-import '../widgets/appointment_empty_state.dart';
+import '../widgets/appointment_list.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../auth/widgets/auth_notice.dart';
 import 'appointment_form.dart';
 
 class AppointmentShell extends ConsumerStatefulWidget {
-  const AppointmentShell({super.key});
+  const AppointmentShell({required this.uid, super.key});
+
+  final String uid;
 
   @override
   ConsumerState<AppointmentShell> createState() => _AppointmentShellState();
@@ -33,11 +35,16 @@ class _AppointmentShellState extends ConsumerState<AppointmentShell> {
     if (mounted && day != null) setState(() => _day = day);
   }
 
-  void _openForm() {
+  Future<void> _openForm() async {
     HapticFeedback.lightImpact();
-    Navigator.of(
-      context,
-    ).push<void>(CupertinoPageRoute(builder: (_) => const AppointmentForm()));
+    final saved = await Navigator.of(context).push<bool>(
+      CupertinoPageRoute(builder: (_) => AppointmentForm(uid: widget.uid)),
+    );
+    if (mounted && saved == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppStrings.appointmentSaved)),
+      );
+    }
   }
 
   Future<void> _signOut() async {
@@ -97,13 +104,17 @@ class _AppointmentShellState extends ConsumerState<AppointmentShell> {
                           ),
                           const SizedBox(height: AppTheme.medium),
                         ],
-                        AppointmentEmptyState(isCalendar: isCalendar),
-                        const SizedBox(height: AppTheme.medium),
+
                         if (!isCalendar)
                           CupertinoButton.filled(
                             onPressed: _openForm,
                             child: const Text(AppStrings.addAppointment),
                           ),
+                        const SizedBox(height: AppTheme.medium),
+                        AppointmentList(
+                          uid: widget.uid,
+                          day: isCalendar ? _day : null,
+                        ),
                       ],
                     ),
                   ),

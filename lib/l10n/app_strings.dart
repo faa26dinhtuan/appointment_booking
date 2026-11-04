@@ -16,8 +16,6 @@ abstract final class AppStrings {
   static const location = 'Địa điểm';
   static const date = 'Ngày';
   static const time = 'Giờ';
-  static const formPreview =
-      'Bạn có thể nhập thông tin và chọn ngày giờ ở bản này.';
 
   static const login = 'Đăng nhập';
   static const loginSubtitle = 'Quản lý lịch hẹn của bạn ở một nơi.';
@@ -59,6 +57,17 @@ abstract final class AppStrings {
   static const authEmailInUse = 'Email này đã được dùng để đăng ký.';
   static const authAccountDisabled = 'Tài khoản này đã bị vô hiệu hóa.';
   static const authWeakPassword = 'Mật khẩu chưa đáp ứng yêu cầu bảo mật.';
+
+  static const saveAppointment = 'Lưu lịch hẹn';
+  static const appointmentSaved = 'Đã lưu lịch hẹn.';
+  static const appointmentSaveError =
+      'Không thể lưu lịch hẹn. Vui lòng thử lại.';
+  static const appointmentsLoadError = 'Không thể tải lịch hẹn.';
+  static const retry = 'Thử lại';
+  static const appointmentTitleRequired = 'Nhập tiêu đề lịch hẹn.';
+  static const appointmentDateTimeRequired = 'Chọn ngày và giờ hẹn.';
+  static const appointmentMustBeFuture = 'Chọn thời điểm trong tương lai.';
+  static const appointmentPending = 'Đang chờ đồng bộ.';
 
   static String formatDate(DateTime date) =>
       DateFormat.yMMMMd('vi').format(date);

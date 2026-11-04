@@ -65,8 +65,9 @@ class _AuthGate extends ConsumerWidget {
     return ref
         .watch(authSessionProvider)
         .when(
-          data: (signedIn) =>
-              signedIn ? const AppointmentShell() : const LoginScreen(),
+          data: (uid) => uid == null
+              ? const LoginScreen()
+              : AppointmentShell(key: ValueKey(uid), uid: uid),
           loading: () => const _AuthStatus(child: CupertinoActivityIndicator()),
           error: (_, _) => const _AuthStatus(child: Text(AppStrings.authError)),
         );
