@@ -38,16 +38,16 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       if (mounted) {
         await showAuthNotice(
           context,
-          AppStrings.resetPassword,
-          AppStrings.resetSent,
+          AppStrings.of(context).resetPassword,
+          AppStrings.of(context).resetSent,
         );
       }
     } catch (error) {
       if (mounted) {
         await showAuthNotice(
           context,
-          AppStrings.resetPassword,
-          authErrorMessage(error),
+          AppStrings.of(context).resetPassword,
+          authErrorMessage(error, AppStrings.of(context)),
         );
       }
     } finally {
@@ -58,9 +58,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text(AppStrings.resetPassword),
-        previousPageTitle: AppStrings.login,
+      navigationBar: CupertinoNavigationBar(
+        middle: Text(AppStrings.of(context).resetPassword),
+        previousPageTitle: AppStrings.of(context).login,
       ),
       child: SafeArea(
         child: Center(
@@ -77,15 +77,15 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                 ),
                 const SizedBox(height: AppTheme.medium),
                 Text(
-                  AppStrings.resetPassword,
+                  AppStrings.of(context).resetPassword,
                   textAlign: TextAlign.center,
                   style: CupertinoTheme.of(context)
                       .textTheme
                       .navLargeTitleTextStyle,
                 ),
                 const SizedBox(height: AppTheme.small),
-                const Text(
-                  AppStrings.resetPasswordSubtitle,
+                Text(
+                  AppStrings.of(context).resetPasswordSubtitle,
                   textAlign: TextAlign.center,
                   style: TextStyle(color: AppTheme.muted),
                 ),
@@ -101,13 +101,16 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                         children: [
                           CupertinoTextFormFieldRow(
                             controller: _email,
-                            placeholder: AppStrings.email,
+                            placeholder: AppStrings.of(context).email,
                             decoration: AppTheme.field,
                             padding: const EdgeInsets.all(AppTheme.small),
                             keyboardType: TextInputType.emailAddress,
                             textInputAction: TextInputAction.done,
                             autocorrect: false,
-                            validator: AuthValidation.email,
+                            validator: (value) => AuthValidation.email(
+                              value,
+                              AppStrings.of(context),
+                            ),
                             onFieldSubmitted: (_) => _submit(),
                           ),
                           const SizedBox(height: AppTheme.small),
@@ -116,8 +119,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                             onPressed: _busy ? null : _submit,
                             child: _busy
                                 ? const CupertinoActivityIndicator()
-                                : const Text(
-                                    AppStrings.sendResetLink,
+                                : Text(
+                                    AppStrings.of(context).sendResetLink,
                                     textAlign: TextAlign.center,
                                   ),
                           ),

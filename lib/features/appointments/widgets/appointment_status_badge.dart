@@ -11,7 +11,7 @@ class AppointmentStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = AppStrings.statusLabel(status);
+    final label = AppStrings.of(context).statusLabel(status);
     final icon = switch (status) {
       AppointmentStatus.upcoming => CupertinoIcons.clock,
       AppointmentStatus.completed => CupertinoIcons.check_mark_circled,

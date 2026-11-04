@@ -50,18 +50,18 @@ class _AppointmentDetailScreenState
     final confirmed = await showCupertinoDialog<bool>(
       context: context,
       builder: (dialogContext) => CupertinoAlertDialog(
-        title: const Text(AppStrings.deleteAppointment),
-        content: const Text(AppStrings.deleteAppointmentConfirmation),
+        title: Text(AppStrings.of(context).deleteAppointment),
+        content: Text(AppStrings.of(context).deleteAppointmentConfirmation),
         actions: [
           CupertinoDialogAction(
             isDefaultAction: true,
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text(AppStrings.cancel),
+            child: Text(AppStrings.of(context).cancel),
           ),
           CupertinoDialogAction(
             isDestructiveAction: true,
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text(AppStrings.delete),
+            child: Text(AppStrings.of(context).delete),
           ),
         ],
       ),
@@ -92,18 +92,18 @@ class _AppointmentDetailScreenState
       final confirmed = await showCupertinoDialog<bool>(
         context: context,
         builder: (dialogContext) => CupertinoAlertDialog(
-          title: const Text(AppStrings.cancelAppointment),
-          content: const Text(AppStrings.cancelAppointmentConfirmation),
+          title: Text(AppStrings.of(context).cancelAppointment),
+          content: Text(AppStrings.of(context).cancelAppointmentConfirmation),
           actions: [
             CupertinoDialogAction(
               isDefaultAction: true,
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text(AppStrings.keepAppointment),
+              child: Text(AppStrings.of(context).keepAppointment),
             ),
             CupertinoDialogAction(
               isDestructiveAction: true,
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text(AppStrings.cancelAppointment),
+              child: Text(AppStrings.of(context).cancelAppointment),
             ),
           ],
         ),
@@ -138,10 +138,10 @@ class _AppointmentDetailScreenState
                 error: (_, _) => Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(AppStrings.appointmentsLoadError),
+                    Text(AppStrings.of(context).appointmentsLoadError),
                     CupertinoButton(
                       onPressed: () => ref.invalidate(provider),
-                      child: const Text(AppStrings.retry),
+                      child: Text(AppStrings.of(context).retry),
                     ),
                   ],
                 ),
@@ -153,16 +153,16 @@ class _AppointmentDetailScreenState
                   if (appointment == null) {
                     return Text(
                       snapshot.isFromCache
-                          ? AppStrings.appointmentsAwaitingServer
-                          : AppStrings.appointmentUnavailable,
+                          ? AppStrings.of(context).appointmentsAwaitingServer
+                          : AppStrings.of(context).appointmentUnavailable,
                     );
                   }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       if (snapshot.isFromCache) ...[
-                        const Text(
-                          AppStrings.appointmentsCached,
+                        Text(
+                          AppStrings.of(context).appointmentsCached,
                           style: TextStyle(color: AppTheme.muted),
                         ),
                         const SizedBox(height: AppTheme.medium),
@@ -185,23 +185,26 @@ class _AppointmentDetailScreenState
                                 status: appointment.status,
                               ),
                               const SizedBox(height: AppTheme.medium),
-                              Text(AppStrings.formatDate(appointment.startsAt)),
+                              Text(
+                                AppStrings.of(context)
+                                    .formatDate(appointment.startsAt),
+                              ),
                               Text(
                                 TimeOfDay.fromDateTime(appointment.startsAt)
                                     .format(context),
                               ),
                               if (appointment.location.isNotEmpty) ...[
                                 const SizedBox(height: AppTheme.medium),
-                                const Text(
-                                  AppStrings.location,
+                                Text(
+                                  AppStrings.of(context).location,
                                   style: TextStyle(color: AppTheme.muted),
                                 ),
                                 Text(appointment.location),
                               ],
                               if (appointment.notes.isNotEmpty) ...[
                                 const SizedBox(height: AppTheme.medium),
-                                const Text(
-                                  AppStrings.notes,
+                                Text(
+                                  AppStrings.of(context).notes,
                                   style: TextStyle(color: AppTheme.muted),
                                 ),
                                 Text(appointment.notes),
@@ -214,15 +217,15 @@ class _AppointmentDetailScreenState
                       if (_updatingStatus)
                         const Center(child: CupertinoActivityIndicator())
                       else if (appointment.pending)
-                        const Text(
-                          AppStrings.appointmentPending,
+                        Text(
+                          AppStrings.of(context).appointmentPending,
                           textAlign: TextAlign.center,
                         )
                       else if (_updated)
                         Semantics(
                           liveRegion: true,
-                          child: const Text(
-                            AppStrings.appointmentUpdated,
+                          child: Text(
+                            AppStrings.of(context).appointmentUpdated,
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -231,13 +234,13 @@ class _AppointmentDetailScreenState
                         onPressed: appointment.pending || _updatingStatus
                             ? null
                             : () => _edit(appointment),
-                        child: const Text(AppStrings.editAppointment),
+                        child: Text(AppStrings.of(context).editAppointment),
                       ),
                       if (_statusFailed)
                         Semantics(
                           liveRegion: true,
-                          child: const Text(
-                            AppStrings.appointmentStatusError,
+                          child: Text(
+                            AppStrings.of(context).appointmentStatusError,
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -246,20 +249,22 @@ class _AppointmentDetailScreenState
                           onPressed: appointment.pending || _updatingStatus
                               ? null
                               : () => _setStatus(AppointmentStatus.completed),
-                          child: const Text(AppStrings.completeAppointment),
+                          child: Text(
+                            AppStrings.of(context).completeAppointment,
+                          ),
                         ),
                         CupertinoButton(
                           onPressed: appointment.pending || _updatingStatus
                               ? null
                               : () => _setStatus(AppointmentStatus.canceled),
-                          child: const Text(AppStrings.cancelAppointment),
+                          child: Text(AppStrings.of(context).cancelAppointment),
                         ),
                       ],
                       if (_deleteFailed)
                         Semantics(
                           liveRegion: true,
-                          child: const Text(
-                            AppStrings.appointmentDeleteError,
+                          child: Text(
+                            AppStrings.of(context).appointmentDeleteError,
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -268,7 +273,7 @@ class _AppointmentDetailScreenState
                             ? null
                             : _delete,
                         child: Text(
-                          AppStrings.deleteAppointment,
+                          AppStrings.of(context).deleteAppointment,
                           style: appointment.pending
                               ? null
                               : TextStyle(
@@ -284,8 +289,8 @@ class _AppointmentDetailScreenState
               );
 
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text(AppStrings.appointmentDetails),
+      navigationBar: CupertinoNavigationBar(
+        middle: Text(AppStrings.of(context).appointmentDetails),
       ),
       child: SafeArea(
         child: Center(

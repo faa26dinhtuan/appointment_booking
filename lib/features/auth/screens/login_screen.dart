@@ -43,8 +43,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         await showAuthNotice(
           context,
-          AppStrings.login,
-          authErrorMessage(error),
+          AppStrings.of(context).login,
+          authErrorMessage(error, AppStrings.of(context)),
         );
       }
     } finally {
@@ -69,8 +69,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   color: AppTheme.accent,
                 ),
                 const SizedBox(height: AppTheme.medium),
-                const Text(
-                  AppStrings.login,
+                Text(
+                  AppStrings.of(context).login,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 34,
@@ -79,8 +79,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: AppTheme.small),
-                const Text(
-                  AppStrings.loginSubtitle,
+                Text(
+                  AppStrings.of(context).loginSubtitle,
                   textAlign: TextAlign.center,
                   style: TextStyle(color: AppTheme.muted),
                 ),
@@ -97,18 +97,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           children: [
                             CupertinoTextFormFieldRow(
                               controller: _email,
-                              placeholder: AppStrings.email,
+                              placeholder: AppStrings.of(context).email,
                               decoration: AppTheme.field,
                               padding: const EdgeInsets.all(AppTheme.small),
                               keyboardType: TextInputType.emailAddress,
                               textInputAction: TextInputAction.next,
                               autofillHints: const [AutofillHints.username],
                               autocorrect: false,
-                              validator: AuthValidation.email,
+                              validator: (value) => AuthValidation.email(
+                                value,
+                                AppStrings.of(context),
+                              ),
                             ),
                             CupertinoTextFormFieldRow(
                               controller: _password,
-                              placeholder: AppStrings.password,
+                              placeholder: AppStrings.of(context).password,
                               decoration: AppTheme.field,
                               padding: const EdgeInsets.all(AppTheme.small),
                               obscureText: _obscure,
@@ -119,7 +122,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               onFieldSubmitted: (_) => _submit(),
                               validator: (value) =>
                                   value == null || value.isEmpty
-                                  ? AppStrings.passwordRequired
+                                  ? AppStrings.of(context).passwordRequired
                                   : null,
                             ),
                             Align(
@@ -129,8 +132,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     setState(() => _obscure = !_obscure),
                                 child: Text(
                                   _obscure
-                                      ? AppStrings.showPassword
-                                      : AppStrings.hidePassword,
+                                      ? AppStrings.of(context).showPassword
+                                      : AppStrings.of(context).hidePassword,
                                 ),
                               ),
                             ),
@@ -139,8 +142,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               onPressed: _busy ? null : _submit,
                               child: _busy
                                   ? const CupertinoActivityIndicator()
-                                  : const Text(
-                                      AppStrings.login,
+                                  : Text(
+                                      AppStrings.of(context).login,
                                       textAlign: TextAlign.center,
                                     ),
                             ),
@@ -162,7 +165,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 builder: (_) => const RegisterScreen(),
                               ),
                             ),
-                      child: const Text(AppStrings.register),
+                      child: Text(AppStrings.of(context).register),
                     ),
                     CupertinoButton(
                       onPressed: _busy
@@ -172,7 +175,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 builder: (_) => const ResetPasswordScreen(),
                               ),
                             ),
-                      child: const Text(AppStrings.forgotPassword),
+                      child: Text(AppStrings.of(context).forgotPassword),
                     ),
                   ],
                 ),

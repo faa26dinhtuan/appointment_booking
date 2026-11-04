@@ -8,31 +8,41 @@ import 'core/theme/app_theme.dart';
 import 'features/appointments/screens/appointment_shell.dart';
 import 'features/auth/controllers/auth_controller.dart';
 import 'features/auth/screens/login_screen.dart';
+import 'features/settings/controllers/locale_controller.dart';
 import 'firebase_options.dart';
 import 'l10n/app_strings.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(ProviderScope(child: MyApp(initialization: _initializeFirebase())));
+  final locale = await LocaleController.load();
+  runApp(
+    ProviderScope(
+      overrides: [initialLocaleProvider.overrideWithValue(locale)],
+      child: MyApp(initialization: _initializeFirebase()),
+    ),
+  );
 }
 
 Future<void> _initializeFirebase() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({required this.initialization, super.key});
 
   final Future<void> initialization;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: AppStrings.appName,
-      locale: AppStrings.locale,
-      supportedLocales: const [AppStrings.locale],
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      onGenerateTitle: (context) => AppStrings.of(context).appName,
+      locale: ref.watch(localeControllerProvider),
+      supportedLocales: AppStrings.supportedLocales,
+      localizationsDelegates: const [
+        AppStrings.delegate,
+        ...GlobalMaterialLocalizations.delegates,
+      ],
       theme: AppTheme.light,
       builder: (context, child) => DefaultTextStyle(
         style: CupertinoTheme.of(context).textTheme.textStyle
@@ -43,8 +53,8 @@ class MyApp extends StatelessWidget {
         future: initialization,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return const _AuthStatus(
-              child: Text(AppStrings.firebaseStartupError),
+            return _AuthStatus(
+              child: Text(AppStrings.of(context).firebaseStartupError),
             );
           }
           if (snapshot.connectionState != ConnectionState.done) {
@@ -69,7 +79,8 @@ class _AuthGate extends ConsumerWidget {
               ? const LoginScreen()
               : AppointmentShell(key: ValueKey(uid), uid: uid),
           loading: () => const _AuthStatus(child: CupertinoActivityIndicator()),
-          error: (_, _) => const _AuthStatus(child: Text(AppStrings.authError)),
+          error: (_, _) =>
+              _AuthStatus(child: Text(AppStrings.of(context).authError)),
         );
   }
 }

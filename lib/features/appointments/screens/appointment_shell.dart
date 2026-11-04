@@ -39,7 +39,7 @@ class _AppointmentShellState extends State<AppointmentShell> {
     );
     if (mounted && saved == true) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppStrings.appointmentSaved)),
+        SnackBar(content: Text(AppStrings.of(context).appointmentSaved)),
       );
     }
   }
@@ -56,10 +56,10 @@ class _AppointmentShellState extends State<AppointmentShell> {
             CupertinoSliverNavigationBar(
               largeTitle: Text(
                 isSettings
-                    ? AppStrings.settings
+                    ? AppStrings.of(context).settings
                     : isCalendar
-                    ? AppStrings.calendar
-                    : AppStrings.appName,
+                    ? AppStrings.of(context).calendar
+                    : AppStrings.of(context).appName,
               ),
             ),
             SliverPadding(
@@ -78,7 +78,9 @@ class _AppointmentShellState extends State<AppointmentShell> {
                               if (isCalendar) ...[
                                 CupertinoButton.tinted(
                                   onPressed: _pickDay,
-                                  child: Text(AppStrings.formatDate(_day)),
+                                  child: Text(
+                                    AppStrings.of(context).formatDate(_day),
+                                  ),
                                 ),
                                 const SizedBox(height: AppTheme.medium),
                               ],
@@ -86,7 +88,9 @@ class _AppointmentShellState extends State<AppointmentShell> {
                               if (!isCalendar)
                                 CupertinoButton.filled(
                                   onPressed: _openForm,
-                                  child: const Text(AppStrings.addAppointment),
+                                  child: Text(
+                                    AppStrings.of(context).addAppointment,
+                                  ),
                                 ),
                               const SizedBox(height: AppTheme.medium),
                               AppointmentList(
@@ -109,18 +113,18 @@ class _AppointmentShellState extends State<AppointmentShell> {
           HapticFeedback.selectionClick();
           setState(() => _tab = index);
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.list_bullet),
-            label: AppStrings.appName,
+            label: AppStrings.of(context).appName,
           ),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.calendar),
-            label: AppStrings.calendar,
+            label: AppStrings.of(context).calendar,
           ),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.settings),
-            label: AppStrings.settings,
+            label: AppStrings.of(context).settings,
           ),
         ],
       ),

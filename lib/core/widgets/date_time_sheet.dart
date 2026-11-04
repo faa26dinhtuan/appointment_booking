@@ -25,11 +25,11 @@ Future<DateTime?> showDateTimeSheet({
               children: [
                 CupertinoButton(
                   onPressed: () => Navigator.pop(sheetContext),
-                  child: const Text(AppStrings.cancel),
+                  child: Text(AppStrings.of(context).cancel),
                 ),
                 CupertinoButton(
                   onPressed: () => Navigator.pop(sheetContext, selection),
-                  child: const Text(AppStrings.done),
+                  child: Text(AppStrings.of(context).done),
                 ),
               ],
             ),

@@ -25,13 +25,15 @@ class AppointmentEmptyState extends StatelessWidget {
             Icon(CupertinoIcons.calendar, color: theme.colorScheme.primary),
             const SizedBox(height: AppTheme.medium),
             Text(
-              AppStrings.emptyTitle,
+              AppStrings.of(context).emptyTitle,
               style: theme.textTheme.titleLarge,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppTheme.small),
             Text(
-              isCalendar ? AppStrings.emptyDay : AppStrings.emptyDescription,
+              isCalendar
+                  ? AppStrings.of(context).emptyDay
+                  : AppStrings.of(context).emptyDescription,
               textAlign: TextAlign.center,
             ),
           ],

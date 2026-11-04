@@ -30,7 +30,7 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
     await showCupertinoModalPopup<void>(
       context: context,
       builder: (sheetContext) => CupertinoActionSheet(
-        title: const Text(AppStrings.filterStatus),
+        title: Text(AppStrings.of(context).filterStatus),
         actions: [
           for (final status in <AppointmentStatus?>[
             null,
@@ -42,12 +42,12 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
                 Navigator.of(sheetContext).pop();
                 if (mounted) setState(() => _status = status);
               },
-              child: Text(AppStrings.statusLabel(status)),
+              child: Text(AppStrings.of(context).statusLabel(status)),
             ),
         ],
         cancelButton: CupertinoActionSheetAction(
           onPressed: () => Navigator.of(sheetContext).pop(),
-          child: const Text(AppStrings.cancel),
+          child: Text(AppStrings.of(context).cancel),
         ),
       ),
     );
@@ -64,7 +64,7 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
     );
     if (mounted && deleted == true) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppStrings.appointmentDeleted)),
+        SnackBar(content: Text(AppStrings.of(context).appointmentDeleted)),
       );
     }
   }
@@ -79,10 +79,10 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
           loading: () => const Center(child: CupertinoActivityIndicator()),
           error: (_, _) => Column(
             children: [
-              const Text(AppStrings.appointmentsLoadError),
+              Text(AppStrings.of(context).appointmentsLoadError),
               CupertinoButton(
                 onPressed: () => ref.invalidate(provider),
-                child: const Text(AppStrings.retry),
+                child: Text(AppStrings.of(context).retry),
               ),
             ],
           ),
@@ -108,19 +108,19 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
                     liveRegion: true,
                     child: Text(
                       byDay.isEmpty
-                          ? AppStrings.appointmentsAwaitingServer
-                          : AppStrings.appointmentsCached,
+                          ? AppStrings.of(context).appointmentsAwaitingServer
+                          : AppStrings.of(context).appointmentsCached,
                       style: const TextStyle(color: AppTheme.muted),
                     ),
                   ),
                   const SizedBox(height: AppTheme.small),
                 ],
                 if (day != null && !snapshot.isFromCache) ...[
-                  Text(AppStrings.appointmentsOnDay(byDay.length)),
+                  Text(AppStrings.of(context).appointmentsOnDay(byDay.length)),
                   const SizedBox(height: AppTheme.small),
                 ],
                 CupertinoSearchTextField(
-                  placeholder: AppStrings.searchAppointments,
+                  placeholder: AppStrings.of(context).searchAppointments,
                   decoration: AppTheme.field,
                   onChanged: (value) =>
                       setState(() => _query = value.trim().toLowerCase()),
@@ -129,16 +129,18 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
                   alignment: Alignment.centerLeft,
                   child: CupertinoButton(
                     onPressed: _chooseStatus,
-                    child: Text(AppStrings.statusFilterLabel(_status)),
+                    child: Text(
+                      AppStrings.of(context).statusFilterLabel(_status),
+                    ),
                   ),
                 ),
                 if (byDay.isEmpty && !snapshot.isFromCache)
                   AppointmentEmptyState(isCalendar: day != null)
                 else if (byDay.isNotEmpty && visible.isEmpty)
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.all(AppTheme.medium),
                     child: Text(
-                      AppStrings.noAppointmentMatches,
+                      AppStrings.of(context).noAppointmentMatches,
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -164,7 +166,10 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
                                 ),
                               ),
                               const SizedBox(height: AppTheme.small),
-                              Text(AppStrings.formatDate(appointment.startsAt)),
+                              Text(
+                                AppStrings.of(context)
+                                    .formatDate(appointment.startsAt),
+                              ),
                               Text(
                                 TimeOfDay.fromDateTime(appointment.startsAt)
                                     .format(context),
@@ -178,7 +183,7 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
                                 status: appointment.status,
                               ),
                               if (appointment.pending)
-                                const Text(AppStrings.appointmentPending),
+                                Text(AppStrings.of(context).appointmentPending),
                             ],
                           ),
                         ),

@@ -12,20 +12,20 @@ final authSessionProvider = StreamProvider<String?>(
   (ref) => ref.watch(authControllerProvider).sessionChanges(),
 );
 
-String authErrorMessage(Object error) {
-  if (error is! FirebaseAuthException) return AppStrings.authError;
+String authErrorMessage(Object error, AppStrings strings) {
+  if (error is! FirebaseAuthException) return strings.authError;
 
   return switch (error.code) {
-    'network-request-failed' => AppStrings.authNetworkError,
-    'too-many-requests' => AppStrings.authRateLimited,
-    'invalid-email' => AppStrings.emailInvalid,
+    'network-request-failed' => strings.authNetworkError,
+    'too-many-requests' => strings.authRateLimited,
+    'invalid-email' => strings.emailInvalid,
     'invalid-credential' ||
     'wrong-password' ||
-    'user-not-found' => AppStrings.authInvalidCredentials,
-    'email-already-in-use' => AppStrings.authEmailInUse,
-    'user-disabled' => AppStrings.authAccountDisabled,
+    'user-not-found' => strings.authInvalidCredentials,
+    'email-already-in-use' => strings.authEmailInUse,
+    'user-disabled' => strings.authAccountDisabled,
     'weak-password' ||
-    'password-does-not-meet-requirements' => AppStrings.authWeakPassword,
-    _ => AppStrings.authError,
+    'password-does-not-meet-requirements' => strings.authWeakPassword,
+    _ => strings.authError,
   };
 }
