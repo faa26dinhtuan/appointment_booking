@@ -9,18 +9,22 @@ service cloud.firestore {
       function validAppointment() {
         let data = request.resource.data;
         let fields = ['title', 'notes', 'location', 'startsAt'];
-        return data.keys().hasAll(fields) && data.keys().hasOnly(fields)
+        return data.keys().hasAll(fields) && data.keys().hasOnly(['title', 'notes', 'location', 'startsAt', 'status'])
           && data.title is string && data.title.size() > 0
           && data.notes is string && data.location is string
-          && data.startsAt is timestamp;
+          && data.startsAt is timestamp
+          && data.get('status', 'upcoming') in ['upcoming', 'completed', 'canceled'];
       }
 
       allow read, delete: if isOwner();
       allow create: if isOwner() && validAppointment()
-        && request.resource.data.startsAt > request.time;
+        && request.resource.data.startsAt > request.time
+        && request.resource.data.get('status', 'upcoming') == 'upcoming';
       allow update: if isOwner() && validAppointment()
         && (request.resource.data.startsAt == resource.data.startsAt
-          || request.resource.data.startsAt > request.time);
+          || request.resource.data.startsAt > request.time)
+        && (resource.data.get('status', 'upcoming') == 'upcoming'
+          || request.resource.data.get('status', 'upcoming') == resource.data.status);
     }
   }
 }

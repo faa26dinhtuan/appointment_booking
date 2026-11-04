@@ -8,6 +8,7 @@ import '../../../l10n/app_strings.dart';
 import '../controllers/appointments_controller.dart';
 import '../screens/appointment_detail_screen.dart';
 import 'appointment_empty_state.dart';
+import 'appointment_status_badge.dart';
 
 class AppointmentList extends ConsumerWidget {
   const AppointmentList({required this.uid, this.day, super.key});
@@ -90,6 +91,10 @@ class AppointmentList extends ConsumerWidget {
                                 Text(appointment.location),
                               if (appointment.notes.isNotEmpty)
                                 Text(appointment.notes),
+                              const SizedBox(height: AppTheme.small),
+                              AppointmentStatusBadge(
+                                status: appointment.status,
+                              ),
                               if (appointment.pending)
                                 const Text(AppStrings.appointmentPending),
                             ],

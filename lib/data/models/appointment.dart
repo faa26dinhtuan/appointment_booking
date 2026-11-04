@@ -1,3 +1,15 @@
+enum AppointmentStatus {
+  upcoming,
+  completed,
+  canceled;
+
+  static AppointmentStatus fromStorage(Object? value) => switch (value) {
+    'completed' => completed,
+    'canceled' => canceled,
+    _ => upcoming,
+  };
+}
+
 class Appointment {
   const Appointment({
     required this.id,
@@ -6,6 +18,7 @@ class Appointment {
     required this.location,
     required this.startsAt,
     required this.pending,
+    required this.status,
   });
 
   final String id;
@@ -14,4 +27,5 @@ class Appointment {
   final String location;
   final DateTime startsAt;
   final bool pending;
+  final AppointmentStatus status;
 }

@@ -25,6 +25,9 @@ class AppointmentsRepository {
                 startsAt: (document['startsAt'] as Timestamp)
                     .toDate()
                     .toLocal(),
+                status: AppointmentStatus.fromStorage(
+                  document.data()['status'],
+                ),
                 pending: document.metadata.hasPendingWrites,
               ),
           ],
@@ -33,6 +36,12 @@ class AppointmentsRepository {
 
   Future<void> delete({required String uid, required String id}) =>
       _appointments(uid).doc(id).delete();
+
+  Future<void> setStatus({
+    required String uid,
+    required String id,
+    required AppointmentStatus status,
+  }) => _appointments(uid).doc(id).update({'status': status.name});
 
   Future<void> save({
     String? id,
@@ -50,7 +59,10 @@ class AppointmentsRepository {
     };
     final collection = _appointments(uid);
     return id == null
-        ? collection.doc().set(fields)
+        ? collection.doc().set({
+            ...fields,
+            'status': AppointmentStatus.upcoming.name,
+          })
         : collection.doc(id).update(fields);
   }
 }

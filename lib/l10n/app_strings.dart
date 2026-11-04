@@ -82,6 +82,17 @@ abstract final class AppStrings {
   static const appointmentDeleteError =
       'Không thể xóa lịch hẹn. Vui lòng thử lại.';
 
+  static const appointmentUpcoming = 'Sắp diễn ra';
+  static const appointmentCompleted = 'Đã hoàn thành';
+  static const appointmentCanceled = 'Đã hủy';
+  static const completeAppointment = 'Đánh dấu hoàn thành';
+  static const cancelAppointment = 'Hủy lịch hẹn';
+  static const cancelAppointmentConfirmation =
+      'Lịch hẹn sẽ được đánh dấu Đã hủy và vẫn xuất hiện trong danh sách.';
+  static const keepAppointment = 'Giữ lịch hẹn';
+  static const appointmentStatusError =
+      'Không thể cập nhật trạng thái. Vui lòng thử lại.';
+
   static String formatDate(DateTime date) =>
       DateFormat.yMMMMd('vi').format(date);
 }

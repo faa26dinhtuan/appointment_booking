@@ -7,6 +7,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../data/models/appointment.dart';
 import '../../../l10n/app_strings.dart';
 import '../controllers/appointments_controller.dart';
+import '../widgets/appointment_status_badge.dart';
 import 'appointment_form.dart';
 
 class AppointmentDetailScreen extends ConsumerStatefulWidget {
@@ -29,6 +30,8 @@ class _AppointmentDetailScreenState
   bool _updated = false;
   bool _deleting = false;
   bool _deleteFailed = false;
+  bool _updatingStatus = false;
+  bool _statusFailed = false;
 
   Future<void> _edit(Appointment appointment) async {
     HapticFeedback.lightImpact();
@@ -82,6 +85,46 @@ class _AppointmentDetailScreenState
     }
   }
 
+  Future<void> _setStatus(AppointmentStatus status) async {
+    if (_updatingStatus) return;
+    HapticFeedback.lightImpact();
+    if (status == AppointmentStatus.canceled) {
+      final confirmed = await showCupertinoDialog<bool>(
+        context: context,
+        builder: (dialogContext) => CupertinoAlertDialog(
+          title: const Text(AppStrings.cancelAppointment),
+          content: const Text(AppStrings.cancelAppointmentConfirmation),
+          actions: [
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text(AppStrings.keepAppointment),
+            ),
+            CupertinoDialogAction(
+              isDestructiveAction: true,
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text(AppStrings.cancelAppointment),
+            ),
+          ],
+        ),
+      );
+      if (!mounted || confirmed != true) return;
+    }
+    setState(() {
+      _updatingStatus = true;
+      _statusFailed = false;
+    });
+    try {
+      await ref
+          .read(appointmentsRepositoryProvider)
+          .setStatus(uid: widget.uid, id: widget.appointmentId, status: status);
+    } catch (_) {
+      if (mounted) setState(() => _statusFailed = true);
+    } finally {
+      if (mounted) setState(() => _updatingStatus = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = appointmentsProvider(widget.uid);
@@ -126,6 +169,10 @@ class _AppointmentDetailScreenState
                                     .navTitleTextStyle,
                               ),
                               const SizedBox(height: AppTheme.medium),
+                              AppointmentStatusBadge(
+                                status: appointment.status,
+                              ),
+                              const SizedBox(height: AppTheme.medium),
                               Text(AppStrings.formatDate(appointment.startsAt)),
                               Text(
                                 TimeOfDay.fromDateTime(appointment.startsAt)
@@ -152,7 +199,9 @@ class _AppointmentDetailScreenState
                         ),
                       ),
                       const SizedBox(height: AppTheme.medium),
-                      if (appointment.pending)
+                      if (_updatingStatus)
+                        const Center(child: CupertinoActivityIndicator())
+                      else if (appointment.pending)
                         const Text(
                           AppStrings.appointmentPending,
                           textAlign: TextAlign.center,
@@ -167,11 +216,33 @@ class _AppointmentDetailScreenState
                         ),
                       CupertinoButton.filled(
                         borderRadius: AppTheme.corners,
-                        onPressed: appointment.pending
+                        onPressed: appointment.pending || _updatingStatus
                             ? null
                             : () => _edit(appointment),
                         child: const Text(AppStrings.editAppointment),
                       ),
+                      if (_statusFailed)
+                        Semantics(
+                          liveRegion: true,
+                          child: const Text(
+                            AppStrings.appointmentStatusError,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      if (appointment.status == AppointmentStatus.upcoming) ...[
+                        CupertinoButton(
+                          onPressed: appointment.pending || _updatingStatus
+                              ? null
+                              : () => _setStatus(AppointmentStatus.completed),
+                          child: const Text(AppStrings.completeAppointment),
+                        ),
+                        CupertinoButton(
+                          onPressed: appointment.pending || _updatingStatus
+                              ? null
+                              : () => _setStatus(AppointmentStatus.canceled),
+                          child: const Text(AppStrings.cancelAppointment),
+                        ),
+                      ],
                       if (_deleteFailed)
                         Semantics(
                           liveRegion: true,
@@ -181,7 +252,9 @@ class _AppointmentDetailScreenState
                           ),
                         ),
                       CupertinoButton(
-                        onPressed: appointment.pending ? null : _delete,
+                        onPressed: appointment.pending || _updatingStatus
+                            ? null
+                            : _delete,
                         child: Text(
                           AppStrings.deleteAppointment,
                           style: appointment.pending
