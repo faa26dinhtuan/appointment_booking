@@ -77,11 +77,13 @@ final class AppTheme {
       barBackgroundColor: surface.withAlpha(242),
       textTheme: CupertinoTextThemeData(
         textStyle: TextStyle(color: ink, fontSize: bodyTextSize),
-        navLargeTitleTextStyle: TextStyle(
-          color: ink,
-          fontSize: headingTextSize,
-          fontWeight: FontWeight.w700,
-        ),
+        navLargeTitleTextStyle: const CupertinoTextThemeData()
+            .navLargeTitleTextStyle
+            .copyWith(
+              color: ink,
+              fontSize: headingTextSize,
+              fontWeight: FontWeight.w700,
+            ),
       ),
     ),
     scaffoldBackgroundColor: background,
