@@ -110,7 +110,7 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
                       byDay.isEmpty
                           ? AppStrings.of(context).appointmentsAwaitingServer
                           : AppStrings.of(context).appointmentsCached,
-                      style: const TextStyle(color: AppTheme.muted),
+                      style: TextStyle(color: AppTheme.of(context).muted),
                     ),
                   ),
                   const SizedBox(height: AppTheme.small),
@@ -121,7 +121,7 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
                 ],
                 CupertinoSearchTextField(
                   placeholder: AppStrings.of(context).searchAppointments,
-                  decoration: AppTheme.field,
+                  decoration: AppTheme.of(context).field,
                   onChanged: (value) =>
                       setState(() => _query = value.trim().toLowerCase()),
                 ),
@@ -152,7 +152,7 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
                       onPressed: () => _openDetails(appointment.id),
                       child: Container(
                         width: double.infinity,
-                        decoration: AppTheme.card,
+                        decoration: AppTheme.of(context).card,
                         child: Padding(
                           padding: const EdgeInsets.all(AppTheme.medium),
                           child: Column(
@@ -160,9 +160,9 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
                             children: [
                               Text(
                                 appointment.title,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.w600,
-                                  color: AppTheme.ink,
+                                  color: AppTheme.of(context).ink,
                                 ),
                               ),
                               const SizedBox(height: AppTheme.small),

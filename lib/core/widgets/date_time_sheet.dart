@@ -14,7 +14,7 @@ Future<DateTime?> showDateTimeSheet({
   return showCupertinoModalPopup<DateTime>(
     context: context,
     builder: (sheetContext) => DecoratedBox(
-      decoration: const BoxDecoration(color: AppTheme.surface),
+      decoration: BoxDecoration(color: AppTheme.of(context).surface),
       child: SafeArea(
         top: false,
         child: Column(

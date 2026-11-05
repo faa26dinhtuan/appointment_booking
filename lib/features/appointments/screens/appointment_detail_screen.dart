@@ -163,12 +163,12 @@ class _AppointmentDetailScreenState
                       if (snapshot.isFromCache) ...[
                         Text(
                           AppStrings.of(context).appointmentsCached,
-                          style: TextStyle(color: AppTheme.muted),
+                          style: TextStyle(color: AppTheme.of(context).muted),
                         ),
                         const SizedBox(height: AppTheme.medium),
                       ],
                       DecoratedBox(
-                        decoration: AppTheme.card,
+                        decoration: AppTheme.of(context).card,
                         child: Padding(
                           padding: const EdgeInsets.all(AppTheme.large),
                           child: Column(
@@ -197,7 +197,9 @@ class _AppointmentDetailScreenState
                                 const SizedBox(height: AppTheme.medium),
                                 Text(
                                   AppStrings.of(context).location,
-                                  style: TextStyle(color: AppTheme.muted),
+                                  style: TextStyle(
+                                    color: AppTheme.of(context).muted,
+                                  ),
                                 ),
                                 Text(appointment.location),
                               ],
@@ -205,7 +207,9 @@ class _AppointmentDetailScreenState
                                 const SizedBox(height: AppTheme.medium),
                                 Text(
                                   AppStrings.of(context).notes,
-                                  style: TextStyle(color: AppTheme.muted),
+                                  style: TextStyle(
+                                    color: AppTheme.of(context).muted,
+                                  ),
                                 ),
                                 Text(appointment.notes),
                               ],

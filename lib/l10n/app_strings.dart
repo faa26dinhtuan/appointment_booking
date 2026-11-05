@@ -197,6 +197,14 @@ class AppStrings {
       ? 'Could not save your language choice. Try again.'
       : 'Không thể lưu ngôn ngữ. Vui lòng thử lại.';
 
+  String get settingsAppearance => _isEnglish ? 'Appearance' : 'Giao diện';
+  String get themeSystem => _isEnglish ? 'System' : 'Theo hệ thống';
+  String get themeLight => _isEnglish ? 'Light' : 'Sáng';
+  String get themeDark => _isEnglish ? 'Dark' : 'Tối';
+  String get themeSaveError => _isEnglish
+      ? 'Could not save your appearance choice. Try again.'
+      : 'Không thể lưu giao diện. Vui lòng thử lại.';
+
   String statusLabel(AppointmentStatus? status) => switch (status) {
     AppointmentStatus.upcoming => appointmentUpcoming,
     AppointmentStatus.completed => appointmentCompleted,

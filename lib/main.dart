@@ -9,15 +9,22 @@ import 'features/appointments/screens/appointment_shell.dart';
 import 'features/auth/controllers/auth_controller.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/settings/controllers/locale_controller.dart';
+import 'features/settings/controllers/theme_controller.dart';
 import 'firebase_options.dart';
 import 'l10n/app_strings.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final locale = await LocaleController.load();
+  final (locale, themeMode) = await (
+    LocaleController.load(),
+    ThemeController.load(),
+  ).wait;
   runApp(
     ProviderScope(
-      overrides: [initialLocaleProvider.overrideWithValue(locale)],
+      overrides: [
+        initialLocaleProvider.overrideWithValue(locale),
+        initialThemeModeProvider.overrideWithValue(themeMode),
+      ],
       child: MyApp(initialization: _initializeFirebase()),
     ),
   );
@@ -44,6 +51,8 @@ class MyApp extends ConsumerWidget {
         ...GlobalMaterialLocalizations.delegates,
       ],
       theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: ref.watch(themeControllerProvider),
       builder: (context, child) => DefaultTextStyle(
         style: CupertinoTheme.of(context).textTheme.textStyle
             .copyWith(decoration: TextDecoration.none),

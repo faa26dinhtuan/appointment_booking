@@ -70,10 +70,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               shrinkWrap: true,
               padding: const EdgeInsets.all(AppTheme.large),
               children: [
-                const Icon(
+                Icon(
                   CupertinoIcons.envelope,
                   size: 40,
-                  color: AppTheme.accent,
+                  color: AppTheme.of(context).accent,
                 ),
                 const SizedBox(height: AppTheme.medium),
                 Text(
@@ -87,11 +87,11 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                 Text(
                   AppStrings.of(context).resetPasswordSubtitle,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: AppTheme.muted),
+                  style: TextStyle(color: AppTheme.of(context).muted),
                 ),
                 const SizedBox(height: AppTheme.large),
                 DecoratedBox(
-                  decoration: AppTheme.card,
+                  decoration: AppTheme.of(context).card,
                   child: Padding(
                     padding: const EdgeInsets.all(AppTheme.medium),
                     child: Form(
@@ -102,7 +102,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                           CupertinoTextFormFieldRow(
                             controller: _email,
                             placeholder: AppStrings.of(context).email,
-                            decoration: AppTheme.field,
+                            decoration: AppTheme.of(context).field,
                             padding: const EdgeInsets.all(AppTheme.small),
                             keyboardType: TextInputType.emailAddress,
                             textInputAction: TextInputAction.done,

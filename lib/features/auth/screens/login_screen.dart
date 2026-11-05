@@ -63,10 +63,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               shrinkWrap: true,
               padding: const EdgeInsets.all(AppTheme.large),
               children: [
-                const Icon(
+                Icon(
                   CupertinoIcons.calendar,
                   size: 40,
-                  color: AppTheme.accent,
+                  color: AppTheme.of(context).accent,
                 ),
                 const SizedBox(height: AppTheme.medium),
                 Text(
@@ -75,18 +75,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   style: TextStyle(
                     fontSize: 34,
                     fontWeight: FontWeight.w700,
-                    color: AppTheme.ink,
+                    color: AppTheme.of(context).ink,
                   ),
                 ),
                 const SizedBox(height: AppTheme.small),
                 Text(
                   AppStrings.of(context).loginSubtitle,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: AppTheme.muted),
+                  style: TextStyle(color: AppTheme.of(context).muted),
                 ),
                 const SizedBox(height: AppTheme.large),
                 DecoratedBox(
-                  decoration: AppTheme.card,
+                  decoration: AppTheme.of(context).card,
                   child: Padding(
                     padding: const EdgeInsets.all(AppTheme.medium),
                     child: Form(
@@ -98,7 +98,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             CupertinoTextFormFieldRow(
                               controller: _email,
                               placeholder: AppStrings.of(context).email,
-                              decoration: AppTheme.field,
+                              decoration: AppTheme.of(context).field,
                               padding: const EdgeInsets.all(AppTheme.small),
                               keyboardType: TextInputType.emailAddress,
                               textInputAction: TextInputAction.next,
@@ -112,7 +112,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             CupertinoTextFormFieldRow(
                               controller: _password,
                               placeholder: AppStrings.of(context).password,
-                              decoration: AppTheme.field,
+                              decoration: AppTheme.of(context).field,
                               padding: const EdgeInsets.all(AppTheme.small),
                               obscureText: _obscure,
                               autocorrect: false,

@@ -18,11 +18,11 @@ class AppointmentStatusBadge extends StatelessWidget {
       AppointmentStatus.canceled => CupertinoIcons.xmark_circle,
     };
     final color = status == AppointmentStatus.upcoming
-        ? AppTheme.accent
-        : AppTheme.muted;
+        ? AppTheme.of(context).accent
+        : AppTheme.of(context).muted;
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppTheme.background,
+      decoration: BoxDecoration(
+        color: AppTheme.of(context).background,
         borderRadius: AppTheme.corners,
       ),
       child: Padding(
