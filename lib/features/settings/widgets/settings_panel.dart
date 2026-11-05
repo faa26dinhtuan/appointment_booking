@@ -11,6 +11,7 @@ import '../../auth/widgets/auth_notice.dart';
 import '../controllers/locale_controller.dart';
 import '../controllers/theme_controller.dart';
 import '../screens/display_name_screen.dart';
+import '../screens/change_password_screen.dart';
 import '../screens/about_screen.dart';
 import '../controllers/text_size_controller.dart';
 import '../screens/formats_screen.dart';
@@ -322,6 +323,32 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
                             uid: widget.uid,
                             initialName: name,
                           ),
+                        ),
+                      );
+                    },
+            ),
+          ),
+        ),
+        const SizedBox(height: AppTheme.small),
+        DecoratedBox(
+          decoration: AppTheme.of(context).card,
+          child: ClipRRect(
+            borderRadius: AppTheme.corners,
+            child: CupertinoListTile(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppTheme.medium,
+                vertical: AppTheme.small,
+              ),
+              leading: BrandAssets.icon(BrandAssets.passwordLock),
+              title: Text(strings.changePassword),
+              trailing: const CupertinoListTileChevron(),
+              onTap: _signingOut
+                  ? null
+                  : () {
+                      HapticFeedback.selectionClick();
+                      Navigator.of(context).push<void>(
+                        CupertinoPageRoute(
+                          builder: (_) => ChangePasswordScreen(uid: widget.uid),
                         ),
                       );
                     },

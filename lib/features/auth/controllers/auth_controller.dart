@@ -33,3 +33,18 @@ String authErrorMessage(Object error, AppStrings strings) {
     _ => strings.authError,
   };
 }
+
+String passwordChangeErrorMessage(Object error, AppStrings strings) {
+  if (error is FirebaseAuthException) {
+    switch (error.code) {
+      case 'wrong-password':
+      case 'invalid-credential':
+      case 'invalid-login-credentials':
+        return strings.currentPasswordIncorrect;
+      case 'requires-recent-login':
+      case 'user-token-expired':
+        return strings.passwordChangeSignInAgain;
+    }
+  }
+  return authErrorMessage(error, strings);
+}

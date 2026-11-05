@@ -8,6 +8,7 @@ abstract final class BrandAssets {
   static const appearance = 'assets/icons/appearance.png';
   static const textSize = 'assets/icons/text_size.png';
   static const profile = 'assets/icons/profile.png';
+  static const passwordLock = 'assets/icons/password_lock.png';
   static const signOut = 'assets/icons/sign_out.png';
   static const info = 'assets/icons/info.png';
 

@@ -283,6 +283,25 @@ class AppStrings {
   String dayNumber(DateTime date) =>
       DateFormat.d(locale.languageCode).format(date);
 
+  String get changePassword => _isEnglish ? 'Change password' : 'Đổi mật khẩu';
+  String get currentPassword =>
+      _isEnglish ? 'Current password' : 'Mật khẩu hiện tại';
+  String get newPassword => _isEnglish ? 'New password' : 'Mật khẩu mới';
+  String get currentPasswordRequired =>
+      _isEnglish ? 'Enter your current password.' : 'Nhập mật khẩu hiện tại.';
+  String get currentPasswordIncorrect => _isEnglish
+      ? 'Your current password is incorrect.'
+      : 'Mật khẩu hiện tại chưa đúng.';
+  String get passwordMustDiffer => _isEnglish
+      ? 'Choose a password different from your current one.'
+      : 'Mật khẩu mới phải khác mật khẩu hiện tại.';
+  String get passwordChangeSignInAgain => _isEnglish
+      ? 'Sign in again before changing your password.'
+      : 'Hãy đăng nhập lại trước khi đổi mật khẩu.';
+  String get passwordChanged => _isEnglish
+      ? 'Your password has been changed.'
+      : 'Đã đổi mật khẩu thành công.';
+
   String statusLabel(AppointmentStatus? status) => switch (status) {
     AppointmentStatus.upcoming => appointmentUpcoming,
     AppointmentStatus.completed => appointmentCompleted,

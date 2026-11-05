@@ -39,5 +39,25 @@ class AuthRepository {
     await user.updateDisplayName(name.isEmpty ? null : name);
   }
 
+  Future<void> changePassword({
+    required String uid,
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final user = _auth.currentUser;
+    final email = user?.email;
+    if (user == null || user.uid != uid || email == null) {
+      throw FirebaseAuthException(code: 'user-token-expired');
+    }
+
+    await user.reauthenticateWithCredential(
+      EmailAuthProvider.credential(email: email, password: currentPassword),
+    );
+    if (_auth.currentUser?.uid != uid) {
+      throw FirebaseAuthException(code: 'user-token-expired');
+    }
+    await user.updatePassword(newPassword);
+  }
+
   Future<void> signOut() => _auth.signOut();
 }
