@@ -12,7 +12,8 @@ import '../controllers/theme_controller.dart';
 import '../screens/display_name_screen.dart';
 import '../screens/about_screen.dart';
 import '../controllers/text_size_controller.dart';
-import '../controllers/time_format_controller.dart';
+import '../screens/formats_screen.dart';
+import 'settings_options.dart';
 
 class SettingsPanel extends ConsumerStatefulWidget {
   const SettingsPanel({required this.uid, super.key});
@@ -28,7 +29,6 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
   bool _changingLanguage = false;
   bool _changingTheme = false;
   bool _changingTextSize = false;
-  bool _changingTimeFormat = false;
 
   Future<void> _signOut() async {
     if (_signingOut) return;
@@ -72,7 +72,8 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
   Future<void> _chooseLanguage() async {
     final strings = AppStrings.of(context);
     final current = ref.read(localeControllerProvider);
-    final selected = await _showOptions(
+    final selected = await showSettingsOptions(
+      context: context,
       title: strings.settingsLanguage,
       options: AppStrings.supportedLocales,
       current: current,
@@ -105,7 +106,8 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
   Future<void> _chooseTheme() async {
     final strings = AppStrings.of(context);
     final current = ref.read(themeControllerProvider);
-    final selected = await _showOptions(
+    final selected = await showSettingsOptions(
+      context: context,
       title: strings.settingsAppearance,
       options: ThemeMode.values,
       current: current,
@@ -129,34 +131,6 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
     }
   }
 
-  Future<T?> _showOptions<T extends Object>({
-    required String title,
-    required List<T> options,
-    required T current,
-    required String Function(T) label,
-  }) {
-    final cancel = AppStrings.of(context).cancel;
-    const style = TextStyle(fontSize: AppTheme.bodyTextSize);
-    return showCupertinoModalPopup<T>(
-      context: context,
-      builder: (sheetContext) => CupertinoActionSheet(
-        title: Text(title, style: style),
-        actions: [
-          for (final option in options)
-            CupertinoActionSheetAction(
-              isDefaultAction: option == current,
-              onPressed: () => Navigator.pop(sheetContext, option),
-              child: Text(label(option), style: style),
-            ),
-        ],
-        cancelButton: CupertinoActionSheetAction(
-          onPressed: () => Navigator.pop(sheetContext),
-          child: Text(cancel, style: style),
-        ),
-      ),
-    );
-  }
-
   String _textSizeLabel(AppStrings strings, AppTextSize size) => switch (size) {
     AppTextSize.small => strings.textSizeSmall,
     AppTextSize.standard => strings.textSizeStandard,
@@ -166,7 +140,8 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
   Future<void> _chooseTextSize() async {
     final strings = AppStrings.of(context);
     final current = ref.read(textSizeControllerProvider);
-    final selected = await _showOptions(
+    final selected = await showSettingsOptions(
+      context: context,
       title: strings.settingsTextSize,
       options: AppTextSize.values,
       current: current,
@@ -190,40 +165,12 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
     }
   }
 
-  Future<void> _chooseTimeFormat() async {
-    final strings = AppStrings.of(context);
-    final current = ref.read(timeFormatControllerProvider);
-    final selected = await _showOptions(
-      title: strings.settingsTimeFormat,
-      options: const [true, false],
-      current: current,
-      label: strings.timeFormatLabel,
-    );
-    if (!mounted || selected == null || selected == current) return;
-    setState(() => _changingTimeFormat = true);
-    try {
-      await ref.read(timeFormatControllerProvider.notifier).select(selected);
-      HapticFeedback.selectionClick();
-    } catch (_) {
-      if (mounted) {
-        await showAuthNotice(
-          context,
-          strings.settingsTimeFormat,
-          strings.timeFormatSaveError,
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _changingTimeFormat = false);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
     final locale = ref.watch(localeControllerProvider);
     final themeMode = ref.watch(themeControllerProvider);
     final textSize = ref.watch(textSizeControllerProvider);
-    final use24Hour = ref.watch(timeFormatControllerProvider);
     final profileProvider = displayNameProvider(widget.uid);
     final profile = ref.watch(profileProvider);
     final name = profile.asData?.value;
@@ -325,12 +272,14 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
                 CupertinoIcons.clock,
                 color: AppTheme.of(context).accent,
               ),
-              title: Text(strings.settingsTimeFormat),
-              additionalInfo: Text(strings.timeFormatLabel(use24Hour)),
-              trailing: _changingTimeFormat
-                  ? const CupertinoActivityIndicator()
-                  : const CupertinoListTileChevron(),
-              onTap: _changingTimeFormat ? null : _chooseTimeFormat,
+              title: Text(strings.settingsFormats),
+              trailing: const CupertinoListTileChevron(),
+              onTap: () {
+                HapticFeedback.selectionClick();
+                Navigator.of(context).push<void>(
+                  CupertinoPageRoute(builder: (_) => const FormatsScreen()),
+                );
+              },
             ),
           ),
         ),

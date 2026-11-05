@@ -10,6 +10,7 @@ import 'features/appointments/screens/appointment_shell.dart';
 import 'features/auth/controllers/auth_controller.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/settings/controllers/locale_controller.dart';
+import 'features/settings/controllers/date_format_controller.dart';
 import 'features/settings/controllers/theme_controller.dart';
 import 'features/settings/controllers/text_size_controller.dart';
 import 'features/settings/controllers/time_format_controller.dart';
@@ -18,11 +19,12 @@ import 'l10n/app_strings.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final (locale, themeMode, textSize, use24Hour) = await (
+  final (locale, themeMode, textSize, use24Hour, dateFormat) = await (
     LocaleController.load(),
     ThemeController.load(),
     TextSizeController.load(),
     TimeFormatController.load(),
+    DateFormatController.load(),
   ).wait;
   runApp(
     ProviderScope(
@@ -31,6 +33,7 @@ Future<void> main() async {
         initialThemeModeProvider.overrideWithValue(themeMode),
         initialTextSizeProvider.overrideWithValue(textSize),
         initialUse24HourProvider.overrideWithValue(use24Hour),
+        initialDateFormatProvider.overrideWithValue(dateFormat),
       ],
       child: MyApp(initialization: _initializeFirebase()),
     ),
@@ -55,8 +58,8 @@ class MyApp extends ConsumerWidget {
       onGenerateTitle: (context) => AppStrings.of(context).appName,
       locale: ref.watch(localeControllerProvider),
       supportedLocales: AppStrings.supportedLocales,
-      localizationsDelegates: const [
-        AppStrings.delegate,
+      localizationsDelegates: [
+        AppStrings.delegate(ref.watch(dateFormatControllerProvider)),
         ...GlobalMaterialLocalizations.delegates,
       ],
       theme: AppTheme.light,

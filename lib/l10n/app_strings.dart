@@ -5,14 +5,19 @@ import 'package:intl/intl.dart';
 
 import '../data/models/appointment.dart';
 
+enum AppDateFormat { localized, dayFirst, monthFirst, yearFirst }
+
 class AppStrings {
-  const AppStrings(this.locale);
+  const AppStrings(this.locale, this.dateFormat);
+
+  final AppDateFormat dateFormat;
 
   final Locale locale;
   static const vietnamese = Locale('vi');
   static const english = Locale('en');
   static const supportedLocales = [vietnamese, english];
-  static const delegate = _AppStringsDelegate();
+  static LocalizationsDelegate<AppStrings> delegate(AppDateFormat dateFormat) =>
+      _AppStringsDelegate(dateFormat);
 
   static AppStrings of(BuildContext context) =>
       Localizations.of<AppStrings>(context, AppStrings)!;
@@ -229,6 +234,21 @@ class AppStrings {
   String get aboutVersionUnavailable =>
       _isEnglish ? 'Unavailable' : 'Không đọc được';
 
+  String get settingsFormats => _isEnglish ? 'Formats' : 'Định dạng';
+  String get settingsDateFormat =>
+      _isEnglish ? 'Date format' : 'Định dạng ngày';
+  String get dateFormatSaveError => _isEnglish
+      ? 'Could not save your date format. Try again.'
+      : 'Không thể lưu định dạng ngày. Vui lòng thử lại.';
+
+  String dateFormatLabel(AppDateFormat format) => switch (format) {
+    AppDateFormat.localized =>
+      _isEnglish ? 'Follow app language' : 'Theo ngôn ngữ',
+    AppDateFormat.dayFirst => 'DD/MM/YYYY',
+    AppDateFormat.monthFirst => 'MM/DD/YYYY',
+    AppDateFormat.yearFirst => 'YYYY-MM-DD',
+  };
+
   String get settingsTimeFormat => _isEnglish ? 'Time format' : 'Định dạng giờ';
   String get timeFormatSaveError => _isEnglish
       ? 'Could not save your time format. Try again.'
@@ -266,12 +286,22 @@ class AppStrings {
         : '$total appointments that day';
   }
 
-  String formatDate(DateTime date) =>
-      DateFormat.yMMMMd(locale.languageCode).format(date);
+  String formatDate(DateTime date) {
+    final language = locale.languageCode;
+    final formatter = switch (dateFormat) {
+      AppDateFormat.localized => DateFormat.yMMMMd(language),
+      AppDateFormat.dayFirst => DateFormat('dd/MM/yyyy', language),
+      AppDateFormat.monthFirst => DateFormat('MM/dd/yyyy', language),
+      AppDateFormat.yearFirst => DateFormat('yyyy-MM-dd', language),
+    };
+    return formatter.format(date);
+  }
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {
-  const _AppStringsDelegate();
+  const _AppStringsDelegate(this.dateFormat);
+
+  final AppDateFormat dateFormat;
 
   @override
   bool isSupported(Locale locale) => AppStrings.supportedLocales.any(
@@ -280,8 +310,8 @@ class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {
 
   @override
   Future<AppStrings> load(Locale locale) =>
-      SynchronousFuture(AppStrings(locale));
+      SynchronousFuture(AppStrings(locale, dateFormat));
 
   @override
-  bool shouldReload(_AppStringsDelegate old) => false;
+  bool shouldReload(_AppStringsDelegate old) => old.dateFormat != dateFormat;
 }
