@@ -42,7 +42,7 @@ Future<DateTime?> showDateTimeSheet({
                 maximumDate: maximumDate,
                 minimumYear: minimumDate?.year ?? 1900,
                 maximumYear: maximumDate?.year ?? 2200,
-                use24hFormat: true,
+                use24hFormat: MediaQuery.alwaysUse24HourFormatOf(sheetContext),
                 onDateTimeChanged: (date) => selection = date,
               ),
             ),

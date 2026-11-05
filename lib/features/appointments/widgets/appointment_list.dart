@@ -171,8 +171,10 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
                                     .formatDate(appointment.startsAt),
                               ),
                               Text(
-                                TimeOfDay.fromDateTime(appointment.startsAt)
-                                    .format(context),
+                                AppStrings.formatTime(
+                                  context,
+                                  TimeOfDay.fromDateTime(appointment.startsAt),
+                                ),
                               ),
                               if (appointment.location.isNotEmpty)
                                 Text(appointment.location),

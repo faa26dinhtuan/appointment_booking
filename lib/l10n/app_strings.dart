@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' show TimeOfDay;
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
@@ -227,6 +228,24 @@ class AppStrings {
   String get aboutVersion => _isEnglish ? 'Version' : 'Phiên bản';
   String get aboutVersionUnavailable =>
       _isEnglish ? 'Unavailable' : 'Không đọc được';
+
+  String get settingsTimeFormat => _isEnglish ? 'Time format' : 'Định dạng giờ';
+  String get timeFormatSaveError => _isEnglish
+      ? 'Could not save your time format. Try again.'
+      : 'Không thể lưu định dạng giờ. Vui lòng thử lại.';
+
+  String timeFormatLabel(bool use24Hour) {
+    if (_isEnglish) return use24Hour ? '24-hour' : '12-hour';
+    return use24Hour ? '24 giờ' : '12 giờ';
+  }
+
+  static String formatTime(BuildContext context, TimeOfDay time) {
+    final use24Hour = MediaQuery.alwaysUse24HourFormatOf(context);
+    return DateFormat(
+      use24Hour ? 'HH:mm' : 'h:mm a',
+      of(context).locale.languageCode,
+    ).format(DateTime(2000, 1, 1, time.hour, time.minute));
+  }
 
   String statusLabel(AppointmentStatus? status) => switch (status) {
     AppointmentStatus.upcoming => appointmentUpcoming,

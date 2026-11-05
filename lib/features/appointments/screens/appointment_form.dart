@@ -236,7 +236,7 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
                   child: Text(
                     time == null
                         ? AppStrings.of(context).chooseTime
-                        : time.format(context),
+                        : AppStrings.formatTime(context, time),
                   ),
                 ),
                 const SizedBox(height: AppTheme.medium),

@@ -12,6 +12,7 @@ import '../controllers/theme_controller.dart';
 import '../screens/display_name_screen.dart';
 import '../screens/about_screen.dart';
 import '../controllers/text_size_controller.dart';
+import '../controllers/time_format_controller.dart';
 
 class SettingsPanel extends ConsumerStatefulWidget {
   const SettingsPanel({required this.uid, super.key});
@@ -27,6 +28,7 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
   bool _changingLanguage = false;
   bool _changingTheme = false;
   bool _changingTextSize = false;
+  bool _changingTimeFormat = false;
 
   Future<void> _signOut() async {
     if (_signingOut) return;
@@ -188,12 +190,40 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
     }
   }
 
+  Future<void> _chooseTimeFormat() async {
+    final strings = AppStrings.of(context);
+    final current = ref.read(timeFormatControllerProvider);
+    final selected = await _showOptions(
+      title: strings.settingsTimeFormat,
+      options: const [true, false],
+      current: current,
+      label: strings.timeFormatLabel,
+    );
+    if (!mounted || selected == null || selected == current) return;
+    setState(() => _changingTimeFormat = true);
+    try {
+      await ref.read(timeFormatControllerProvider.notifier).select(selected);
+      HapticFeedback.selectionClick();
+    } catch (_) {
+      if (mounted) {
+        await showAuthNotice(
+          context,
+          strings.settingsTimeFormat,
+          strings.timeFormatSaveError,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _changingTimeFormat = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
     final locale = ref.watch(localeControllerProvider);
     final themeMode = ref.watch(themeControllerProvider);
     final textSize = ref.watch(textSizeControllerProvider);
+    final use24Hour = ref.watch(timeFormatControllerProvider);
     final profileProvider = displayNameProvider(widget.uid);
     final profile = ref.watch(profileProvider);
     final name = profile.asData?.value;
@@ -278,6 +308,29 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
                   ? const CupertinoActivityIndicator()
                   : const CupertinoListTileChevron(),
               onTap: _changingTextSize ? null : _chooseTextSize,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppTheme.small),
+        DecoratedBox(
+          decoration: AppTheme.of(context).card,
+          child: ClipRRect(
+            borderRadius: AppTheme.corners,
+            child: CupertinoListTile(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppTheme.medium,
+                vertical: AppTheme.small,
+              ),
+              leading: Icon(
+                CupertinoIcons.clock,
+                color: AppTheme.of(context).accent,
+              ),
+              title: Text(strings.settingsTimeFormat),
+              additionalInfo: Text(strings.timeFormatLabel(use24Hour)),
+              trailing: _changingTimeFormat
+                  ? const CupertinoActivityIndicator()
+                  : const CupertinoListTileChevron(),
+              onTap: _changingTimeFormat ? null : _chooseTimeFormat,
             ),
           ),
         ),

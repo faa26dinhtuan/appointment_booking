@@ -190,8 +190,10 @@ class _AppointmentDetailScreenState
                                     .formatDate(appointment.startsAt),
                               ),
                               Text(
-                                TimeOfDay.fromDateTime(appointment.startsAt)
-                                    .format(context),
+                                AppStrings.formatTime(
+                                  context,
+                                  TimeOfDay.fromDateTime(appointment.startsAt),
+                                ),
                               ),
                               if (appointment.location.isNotEmpty) ...[
                                 const SizedBox(height: AppTheme.medium),
