@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/theme/app_text_scaler.dart';
+import 'core/widgets/app_splash_screen.dart';
 import 'features/appointments/screens/appointment_shell.dart';
 import 'features/auth/controllers/auth_controller.dart';
 import 'features/auth/screens/login_screen.dart';
@@ -41,7 +42,10 @@ Future<void> main() async {
 }
 
 Future<void> _initializeFirebase() async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Future.wait<void>([
+    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+    Future<void>.delayed(const Duration(milliseconds: 650)),
+  ], eagerError: true);
 }
 
 class MyApp extends ConsumerWidget {
@@ -90,7 +94,7 @@ class MyApp extends ConsumerWidget {
             );
           }
           if (snapshot.connectionState != ConnectionState.done) {
-            return const _AuthStatus(child: CupertinoActivityIndicator());
+            return const AppSplashScreen();
           }
           return const _AuthGate();
         },
@@ -110,7 +114,7 @@ class _AuthGate extends ConsumerWidget {
           data: (uid) => uid == null
               ? const LoginScreen()
               : AppointmentShell(key: ValueKey(uid), uid: uid),
-          loading: () => const _AuthStatus(child: CupertinoActivityIndicator()),
+          loading: AppSplashScreen.new,
           error: (_, _) =>
               _AuthStatus(child: Text(AppStrings.of(context).authError)),
         );
