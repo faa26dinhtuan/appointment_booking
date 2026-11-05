@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/brand_assets.dart';
 import '../../../data/models/appointment.dart';
 import '../../../l10n/app_strings.dart';
 
@@ -13,9 +14,9 @@ class AppointmentStatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final label = AppStrings.of(context).statusLabel(status);
     final icon = switch (status) {
-      AppointmentStatus.upcoming => CupertinoIcons.clock,
-      AppointmentStatus.completed => CupertinoIcons.check_mark_circled,
-      AppointmentStatus.canceled => CupertinoIcons.xmark_circle,
+      AppointmentStatus.upcoming => BrandAssets.clock,
+      AppointmentStatus.completed => BrandAssets.completed,
+      AppointmentStatus.canceled => BrandAssets.canceled,
     };
     final theme = AppTheme.of(context);
     final (color, background) = switch (status) {
@@ -33,7 +34,7 @@ class AppointmentStatusBadge extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 16, color: color),
+            BrandAssets.icon(icon, size: 20),
             const SizedBox(width: AppTheme.small),
             Flexible(
               child: Text(

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/brand_assets.dart';
 import '../../../l10n/app_strings.dart';
 
 class AppointmentEmptyState extends StatelessWidget {
@@ -24,7 +25,7 @@ class AppointmentEmptyState extends StatelessWidget {
               ),
               child: Padding(
                 padding: const EdgeInsets.all(AppTheme.medium),
-                child: Icon(CupertinoIcons.calendar, color: theme.accent),
+                child: BrandAssets.icon(BrandAssets.calendarEmpty, size: 40),
               ),
             ),
             const SizedBox(height: AppTheme.medium),

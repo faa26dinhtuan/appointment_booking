@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/brand_assets.dart';
 import '../../../core/widgets/date_time_sheet.dart';
 import '../../../data/models/appointment.dart';
 import '../../../l10n/app_strings.dart';
@@ -232,10 +233,7 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
                     child: Column(
                       children: [
                         CupertinoListTile(
-                          leading: Icon(
-                            CupertinoIcons.calendar,
-                            color: theme.accent,
-                          ),
+                          leading: BrandAssets.icon(BrandAssets.calendarCheck),
                           title: Text(strings.date),
                           subtitle: Text(
                             date == null
@@ -247,10 +245,7 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
                         ),
                         Divider(height: 1, color: theme.border),
                         CupertinoListTile(
-                          leading: Icon(
-                            CupertinoIcons.clock,
-                            color: theme.accent,
-                          ),
+                          leading: BrandAssets.icon(BrandAssets.clock),
                           title: Text(strings.time),
                           subtitle: Text(
                             time == null

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/brand_assets.dart';
 import '../../../l10n/app_strings.dart';
 import '../auth_validation.dart';
 import '../controllers/auth_controller.dart';
@@ -63,10 +64,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               shrinkWrap: true,
               padding: const EdgeInsets.all(AppTheme.large),
               children: [
-                Icon(
-                  CupertinoIcons.calendar,
-                  size: 40,
-                  color: AppTheme.of(context).accent,
+                Center(
+                  child: Image.asset(
+                    BrandAssets.loginIllustration,
+                    width: 180,
+                    height: 120,
+                    fit: BoxFit.contain,
+                    excludeFromSemantics: true,
+                  ),
                 ),
                 const SizedBox(height: AppTheme.medium),
                 Text(

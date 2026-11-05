@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/brand_assets.dart';
 import '../../../l10n/app_strings.dart';
 
 class AgendaBanner extends StatelessWidget {
@@ -26,7 +27,7 @@ class AgendaBanner extends StatelessWidget {
               ),
               child: Padding(
                 padding: const EdgeInsets.all(AppTheme.small),
-                child: Icon(CupertinoIcons.calendar, color: theme.accent),
+                child: BrandAssets.icon(BrandAssets.calendarCheck),
               ),
             ),
             const SizedBox(height: AppTheme.medium),

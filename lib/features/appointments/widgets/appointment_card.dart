@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show TimeOfDay;
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/brand_assets.dart';
 import '../../../data/models/appointment.dart';
 import '../../../l10n/app_strings.dart';
 import 'appointment_status_badge.dart';
@@ -72,7 +73,7 @@ class AppointmentCard extends StatelessWidget {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(AppTheme.small),
-                      child: Icon(CupertinoIcons.calendar, color: theme.accent),
+                      child: BrandAssets.icon(BrandAssets.calendarCheck),
                     ),
                   ),
                   const SizedBox(width: AppTheme.small),
@@ -98,7 +99,18 @@ class AppointmentCard extends StatelessWidget {
             const SizedBox(height: AppTheme.small),
             if (!showTimeline) Text('$date · $time', style: theme.caption),
             if (appointment.location.isNotEmpty)
-              Text(appointment.location, style: TextStyle(color: theme.muted)),
+              Row(
+                children: [
+                  BrandAssets.icon(BrandAssets.locationPin, size: 20),
+                  const SizedBox(width: AppTheme.small),
+                  Expanded(
+                    child: Text(
+                      appointment.location,
+                      style: TextStyle(color: theme.muted),
+                    ),
+                  ),
+                ],
+              ),
             if (appointment.notes.isNotEmpty)
               Text(
                 appointment.notes,
