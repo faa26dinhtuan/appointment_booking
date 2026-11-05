@@ -18,6 +18,8 @@ final class AppTheme {
   final Color ink;
   final Color muted;
 
+  static const bodyTextSize = 16.0;
+  static const headingTextSize = 30.0;
   static const small = 8.0;
   static const medium = 16.0;
   static const large = 24.0;
@@ -74,7 +76,12 @@ final class AppTheme {
       scaffoldBackgroundColor: background,
       barBackgroundColor: surface.withAlpha(242),
       textTheme: CupertinoTextThemeData(
-        textStyle: TextStyle(color: ink, fontSize: 17),
+        textStyle: TextStyle(color: ink, fontSize: bodyTextSize),
+        navLargeTitleTextStyle: TextStyle(
+          color: ink,
+          fontSize: headingTextSize,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     ),
     scaffoldBackgroundColor: background,

@@ -9,6 +9,7 @@ import '../../auth/controllers/auth_controller.dart';
 import '../../auth/widgets/auth_notice.dart';
 import '../controllers/locale_controller.dart';
 import '../controllers/theme_controller.dart';
+import '../controllers/text_size_controller.dart';
 
 class SettingsPanel extends ConsumerStatefulWidget {
   const SettingsPanel({super.key});
@@ -21,6 +22,7 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
   bool _signingOut = false;
   bool _changingLanguage = false;
   bool _changingTheme = false;
+  bool _changingTextSize = false;
 
   Future<void> _signOut() async {
     if (_signingOut) return;
@@ -64,23 +66,11 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
   Future<void> _chooseLanguage() async {
     final strings = AppStrings.of(context);
     final current = ref.read(localeControllerProvider);
-    final selected = await showCupertinoModalPopup<Locale>(
-      context: context,
-      builder: (sheetContext) => CupertinoActionSheet(
-        title: Text(strings.settingsLanguage),
-        actions: [
-          for (final locale in AppStrings.supportedLocales)
-            CupertinoActionSheetAction(
-              isDefaultAction: locale == current,
-              onPressed: () => Navigator.pop(sheetContext, locale),
-              child: Text(AppStrings.languageName(locale)),
-            ),
-        ],
-        cancelButton: CupertinoActionSheetAction(
-          onPressed: () => Navigator.pop(sheetContext),
-          child: Text(strings.cancel),
-        ),
-      ),
+    final selected = await _showOptions(
+      title: strings.settingsLanguage,
+      options: AppStrings.supportedLocales,
+      current: current,
+      label: AppStrings.languageName,
     );
     if (!mounted || selected == null || selected == current) return;
     setState(() => _changingLanguage = true);
@@ -109,23 +99,11 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
   Future<void> _chooseTheme() async {
     final strings = AppStrings.of(context);
     final current = ref.read(themeControllerProvider);
-    final selected = await showCupertinoModalPopup<ThemeMode>(
-      context: context,
-      builder: (sheetContext) => CupertinoActionSheet(
-        title: Text(strings.settingsAppearance),
-        actions: [
-          for (final mode in ThemeMode.values)
-            CupertinoActionSheetAction(
-              isDefaultAction: mode == current,
-              onPressed: () => Navigator.pop(sheetContext, mode),
-              child: Text(_themeLabel(strings, mode)),
-            ),
-        ],
-        cancelButton: CupertinoActionSheetAction(
-          onPressed: () => Navigator.pop(sheetContext),
-          child: Text(strings.cancel),
-        ),
-      ),
+    final selected = await _showOptions(
+      title: strings.settingsAppearance,
+      options: ThemeMode.values,
+      current: current,
+      label: (mode) => _themeLabel(strings, mode),
     );
     if (!mounted || selected == null || selected == current) return;
     setState(() => _changingTheme = true);
@@ -145,11 +123,73 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
     }
   }
 
+  Future<T?> _showOptions<T extends Object>({
+    required String title,
+    required List<T> options,
+    required T current,
+    required String Function(T) label,
+  }) {
+    final cancel = AppStrings.of(context).cancel;
+    const style = TextStyle(fontSize: AppTheme.bodyTextSize);
+    return showCupertinoModalPopup<T>(
+      context: context,
+      builder: (sheetContext) => CupertinoActionSheet(
+        title: Text(title, style: style),
+        actions: [
+          for (final option in options)
+            CupertinoActionSheetAction(
+              isDefaultAction: option == current,
+              onPressed: () => Navigator.pop(sheetContext, option),
+              child: Text(label(option), style: style),
+            ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: () => Navigator.pop(sheetContext),
+          child: Text(cancel, style: style),
+        ),
+      ),
+    );
+  }
+
+  String _textSizeLabel(AppStrings strings, AppTextSize size) => switch (size) {
+    AppTextSize.small => strings.textSizeSmall,
+    AppTextSize.standard => strings.textSizeStandard,
+    AppTextSize.large => strings.textSizeLarge,
+  };
+
+  Future<void> _chooseTextSize() async {
+    final strings = AppStrings.of(context);
+    final current = ref.read(textSizeControllerProvider);
+    final selected = await _showOptions(
+      title: strings.settingsTextSize,
+      options: AppTextSize.values,
+      current: current,
+      label: (size) => _textSizeLabel(strings, size),
+    );
+    if (!mounted || selected == null || selected == current) return;
+    setState(() => _changingTextSize = true);
+    try {
+      await ref.read(textSizeControllerProvider.notifier).select(selected);
+      HapticFeedback.selectionClick();
+    } catch (_) {
+      if (mounted) {
+        await showAuthNotice(
+          context,
+          strings.settingsTextSize,
+          strings.textSizeSaveError,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _changingTextSize = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
     final locale = ref.watch(localeControllerProvider);
     final themeMode = ref.watch(themeControllerProvider);
+    final textSize = ref.watch(textSizeControllerProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -208,6 +248,29 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
                   ? const CupertinoActivityIndicator()
                   : const CupertinoListTileChevron(),
               onTap: _changingTheme ? null : _chooseTheme,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppTheme.small),
+        DecoratedBox(
+          decoration: AppTheme.of(context).card,
+          child: ClipRRect(
+            borderRadius: AppTheme.corners,
+            child: CupertinoListTile(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppTheme.medium,
+                vertical: AppTheme.small,
+              ),
+              leading: Icon(
+                CupertinoIcons.textformat_size,
+                color: AppTheme.of(context).accent,
+              ),
+              title: Text(strings.settingsTextSize),
+              additionalInfo: Text(_textSizeLabel(strings, textSize)),
+              trailing: _changingTextSize
+                  ? const CupertinoActivityIndicator()
+                  : const CupertinoListTileChevron(),
+              onTap: _changingTextSize ? null : _chooseTextSize,
             ),
           ),
         ),

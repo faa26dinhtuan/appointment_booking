@@ -73,7 +73,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   AppStrings.of(context).login,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 34,
+                    fontSize: AppTheme.headingTextSize,
                     fontWeight: FontWeight.w700,
                     color: AppTheme.of(context).ink,
                   ),

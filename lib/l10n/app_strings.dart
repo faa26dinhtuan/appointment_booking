@@ -205,6 +205,14 @@ class AppStrings {
       ? 'Could not save your appearance choice. Try again.'
       : 'Không thể lưu giao diện. Vui lòng thử lại.';
 
+  String get settingsTextSize => _isEnglish ? 'Text size' : 'Cỡ chữ';
+  String get textSizeSmall => _isEnglish ? 'Small' : 'Nhỏ';
+  String get textSizeStandard => _isEnglish ? 'Standard' : 'Tiêu chuẩn';
+  String get textSizeLarge => _isEnglish ? 'Large' : 'Lớn';
+  String get textSizeSaveError => _isEnglish
+      ? 'Could not save your text size. Try again.'
+      : 'Không thể lưu cỡ chữ. Vui lòng thử lại.';
+
   String statusLabel(AppointmentStatus? status) => switch (status) {
     AppointmentStatus.upcoming => appointmentUpcoming,
     AppointmentStatus.completed => appointmentCompleted,

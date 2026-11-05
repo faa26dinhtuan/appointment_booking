@@ -5,25 +5,29 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/theme/app_theme.dart';
+import 'core/theme/app_text_scaler.dart';
 import 'features/appointments/screens/appointment_shell.dart';
 import 'features/auth/controllers/auth_controller.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/settings/controllers/locale_controller.dart';
 import 'features/settings/controllers/theme_controller.dart';
+import 'features/settings/controllers/text_size_controller.dart';
 import 'firebase_options.dart';
 import 'l10n/app_strings.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final (locale, themeMode) = await (
+  final (locale, themeMode, textSize) = await (
     LocaleController.load(),
     ThemeController.load(),
+    TextSizeController.load(),
   ).wait;
   runApp(
     ProviderScope(
       overrides: [
         initialLocaleProvider.overrideWithValue(locale),
         initialThemeModeProvider.overrideWithValue(themeMode),
+        initialTextSizeProvider.overrideWithValue(textSize),
       ],
       child: MyApp(initialization: _initializeFirebase()),
     ),
@@ -41,6 +45,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final textSize = ref.watch(textSizeControllerProvider);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       onGenerateTitle: (context) => AppStrings.of(context).appName,
@@ -53,11 +58,21 @@ class MyApp extends ConsumerWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ref.watch(themeControllerProvider),
-      builder: (context, child) => DefaultTextStyle(
-        style: CupertinoTheme.of(context).textTheme.textStyle
-            .copyWith(decoration: TextDecoration.none),
-        child: child!,
-      ),
+      builder: (context, child) {
+        final media = MediaQuery.of(context);
+        return MediaQuery(
+          data: media.copyWith(
+            textScaler: textSize == AppTextSize.standard
+                ? media.textScaler
+                : AppTextScaler(media.textScaler, textSize.multiplier),
+          ),
+          child: DefaultTextStyle(
+            style: CupertinoTheme.of(context).textTheme.textStyle
+                .copyWith(decoration: TextDecoration.none),
+            child: child!,
+          ),
+        );
+      },
       home: FutureBuilder<void>(
         future: initialization,
         builder: (context, snapshot) {
