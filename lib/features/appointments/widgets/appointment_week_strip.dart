@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show DateUtils;
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/brand_assets.dart';
 import '../../../l10n/app_strings.dart';
 
 class AppointmentWeekStrip extends StatelessWidget {
@@ -50,7 +51,7 @@ class AppointmentWeekStrip extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: AppTheme.small),
-                  Icon(CupertinoIcons.calendar, color: theme.accent),
+                  BrandAssets.icon(BrandAssets.calendar),
                 ],
               ),
             ),

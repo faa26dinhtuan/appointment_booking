@@ -4,6 +4,7 @@ import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/brand_assets.dart';
 import '../../../l10n/app_strings.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../auth/widgets/auth_notice.dart';
@@ -199,10 +200,7 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
                 horizontal: AppTheme.medium,
                 vertical: AppTheme.small,
               ),
-              leading: Icon(
-                CupertinoIcons.globe,
-                color: AppTheme.of(context).accent,
-              ),
+              leading: BrandAssets.icon(BrandAssets.language),
               title: Text(strings.settingsLanguage),
               additionalInfo: Text(AppStrings.languageName(locale)),
               trailing: _changingLanguage
@@ -222,10 +220,7 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
                 horizontal: AppTheme.medium,
                 vertical: AppTheme.small,
               ),
-              leading: Icon(
-                CupertinoIcons.sun_max,
-                color: AppTheme.of(context).accent,
-              ),
+              leading: BrandAssets.icon(BrandAssets.appearance),
               title: Text(strings.settingsAppearance),
               additionalInfo: Text(_themeLabel(strings, themeMode)),
               trailing: _changingTheme
@@ -245,10 +240,7 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
                 horizontal: AppTheme.medium,
                 vertical: AppTheme.small,
               ),
-              leading: Icon(
-                CupertinoIcons.textformat_size,
-                color: AppTheme.of(context).accent,
-              ),
+              leading: BrandAssets.icon(BrandAssets.textSize),
               title: Text(strings.settingsTextSize),
               additionalInfo: Text(_textSizeLabel(strings, textSize)),
               trailing: _changingTextSize
@@ -268,10 +260,7 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
                 horizontal: AppTheme.medium,
                 vertical: AppTheme.small,
               ),
-              leading: Icon(
-                CupertinoIcons.clock,
-                color: AppTheme.of(context).accent,
-              ),
+              leading: BrandAssets.icon(BrandAssets.clock),
               title: Text(strings.settingsFormats),
               trailing: const CupertinoListTileChevron(),
               onTap: () {
@@ -306,10 +295,7 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
                 horizontal: AppTheme.medium,
                 vertical: AppTheme.small,
               ),
-              leading: Icon(
-                CupertinoIcons.person_crop_circle,
-                color: AppTheme.of(context).accent,
-              ),
+              leading: BrandAssets.icon(BrandAssets.profile),
               title: Text(strings.displayName),
               subtitle: profile.hasValue
                   ? Text(
@@ -352,10 +338,7 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
                 horizontal: AppTheme.medium,
                 vertical: AppTheme.small,
               ),
-              leading: Icon(
-                CupertinoIcons.square_arrow_right,
-                color: AppTheme.of(context).accent,
-              ),
+              leading: BrandAssets.icon(BrandAssets.signOut),
               title: Text(AppStrings.of(context).signOut),
               trailing: _signingOut ? const CupertinoActivityIndicator() : null,
               onTap: _signingOut ? null : _signOut,
@@ -372,10 +355,7 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
                 horizontal: AppTheme.medium,
                 vertical: AppTheme.small,
               ),
-              leading: Icon(
-                CupertinoIcons.info_circle,
-                color: AppTheme.of(context).accent,
-              ),
+              leading: BrandAssets.icon(BrandAssets.info),
               title: Text(strings.settingsAbout),
               trailing: const CupertinoListTileChevron(),
               onTap: () {

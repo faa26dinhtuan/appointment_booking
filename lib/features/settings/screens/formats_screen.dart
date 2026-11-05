@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/brand_assets.dart';
 import '../../../l10n/app_strings.dart';
 import '../../auth/widgets/auth_notice.dart';
 import '../controllers/date_format_controller.dart';
@@ -71,10 +72,7 @@ class _FormatsScreenState extends ConsumerState<FormatsScreen> {
                     child: Column(
                       children: [
                         CupertinoListTile(
-                          leading: Icon(
-                            CupertinoIcons.calendar,
-                            color: theme.accent,
-                          ),
+                          leading: BrandAssets.icon(BrandAssets.calendar),
                           title: Text(strings.settingsDateFormat),
                           subtitle: Text(strings.dateFormatLabel(dateFormat)),
                           trailing: const CupertinoListTileChevron(),
@@ -95,10 +93,7 @@ class _FormatsScreenState extends ConsumerState<FormatsScreen> {
                         ),
                         Container(height: 1, color: theme.border),
                         CupertinoListTile(
-                          leading: Icon(
-                            CupertinoIcons.clock,
-                            color: theme.accent,
-                          ),
+                          leading: BrandAssets.icon(BrandAssets.clock),
                           title: Text(strings.settingsTimeFormat),
                           subtitle: Text(strings.timeFormatLabel(use24Hour)),
                           trailing: const CupertinoListTileChevron(),

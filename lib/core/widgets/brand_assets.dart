@@ -1,6 +1,16 @@
 import 'package:flutter/widgets.dart';
 
 abstract final class BrandAssets {
+  static const appointmentList = 'assets/icons/appointment_list.png';
+  static const calendar = 'assets/icons/calendar.png';
+  static const settings = 'assets/icons/settings.png';
+  static const language = 'assets/icons/language.png';
+  static const appearance = 'assets/icons/appearance.png';
+  static const textSize = 'assets/icons/text_size.png';
+  static const profile = 'assets/icons/profile.png';
+  static const signOut = 'assets/icons/sign_out.png';
+  static const info = 'assets/icons/info.png';
+
   static const calendarCheck = 'assets/icons/calendar_check.png';
   static const calendarEmpty = 'assets/icons/calendar_empty.png';
   static const clock = 'assets/icons/clock.png';

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/brand_assets.dart';
 import '../../../l10n/app_strings.dart';
 
 class AboutScreen extends StatefulWidget {
@@ -29,7 +30,9 @@ class _AboutScreenState extends State<AboutScreen> {
             child: ListView(
               padding: const EdgeInsets.all(AppTheme.large),
               children: [
-                Icon(CupertinoIcons.calendar, color: theme.accent, size: 40),
+                Center(
+                  child: BrandAssets.icon(BrandAssets.calendarCheck, size: 40),
+                ),
                 const SizedBox(height: AppTheme.medium),
                 Text(
                   strings.appName,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/brand_assets.dart';
 import '../../../l10n/app_strings.dart';
 import '../../../core/widgets/date_time_sheet.dart';
 import '../widgets/agenda_banner.dart';
@@ -55,6 +56,24 @@ class _AppointmentShellState extends State<AppointmentShell> {
     final strings = AppStrings.of(context);
     final isCalendar = _tab == 1;
     final isSettings = _tab == 2;
+    BottomNavigationBarItem tabItem(String icon, String label) =>
+        BottomNavigationBarItem(
+          icon: SizedBox.square(
+            dimension: 28,
+            child: Center(child: BrandAssets.icon(icon)),
+          ),
+          activeIcon: DecoratedBox(
+            decoration: BoxDecoration(
+              color: theme.sky,
+              borderRadius: AppTheme.pill,
+            ),
+            child: SizedBox.square(
+              dimension: 28,
+              child: Center(child: BrandAssets.icon(icon)),
+            ),
+          ),
+          label: label,
+        );
     return Scaffold(
       body: SafeArea(
         bottom: false,
@@ -149,21 +168,9 @@ class _AppointmentShellState extends State<AppointmentShell> {
                       setState(() => _tab = index);
                     },
                     items: [
-                      BottomNavigationBarItem(
-                        icon: const Icon(CupertinoIcons.list_bullet),
-                        activeIcon: const Icon(
-                          CupertinoIcons.list_bullet_below_rectangle,
-                        ),
-                        label: strings.appName,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: const Icon(CupertinoIcons.calendar),
-                        label: strings.calendar,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: const Icon(CupertinoIcons.settings),
-                        label: strings.settings,
-                      ),
+                      tabItem(BrandAssets.appointmentList, strings.appName),
+                      tabItem(BrandAssets.calendar, strings.calendar),
+                      tabItem(BrandAssets.settings, strings.settings),
                     ],
                   ),
                 ),
