@@ -71,7 +71,7 @@ class _AppointmentShellState extends State<AppointmentShell> {
                       maxWidth: AppTheme.contentWidth,
                     ),
                     child: isSettings
-                        ? const SettingsPanel()
+                        ? SettingsPanel(uid: widget.uid)
                         : Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [

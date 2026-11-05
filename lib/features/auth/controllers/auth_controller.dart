@@ -12,6 +12,10 @@ final authSessionProvider = StreamProvider<String?>(
   (ref) => ref.watch(authControllerProvider).sessionChanges(),
 );
 
+final displayNameProvider = StreamProvider.autoDispose.family<String?, String>(
+  (ref, uid) => ref.watch(authControllerProvider).displayNameChanges(uid),
+);
+
 String authErrorMessage(Object error, AppStrings strings) {
   if (error is! FirebaseAuthException) return strings.authError;
 

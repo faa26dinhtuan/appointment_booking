@@ -213,6 +213,13 @@ class AppStrings {
       ? 'Could not save your text size. Try again.'
       : 'Không thể lưu cỡ chữ. Vui lòng thử lại.';
 
+  String get displayName => _isEnglish ? 'Display name' : 'Tên hiển thị';
+  String get displayNameUnset => _isEnglish ? 'Not set' : 'Chưa đặt tên';
+  String get displayNameHint => _isEnglish
+      ? 'Choose the name shown in the app. Leave it blank to remove it.'
+      : 'Chọn tên hiển thị trong app. Để trống nếu muốn bỏ tên.';
+  String get saveProfile => _isEnglish ? 'Save' : 'Lưu';
+
   String statusLabel(AppointmentStatus? status) => switch (status) {
     AppointmentStatus.upcoming => appointmentUpcoming,
     AppointmentStatus.completed => appointmentCompleted,

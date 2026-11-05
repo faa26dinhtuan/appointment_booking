@@ -9,10 +9,13 @@ import '../../auth/controllers/auth_controller.dart';
 import '../../auth/widgets/auth_notice.dart';
 import '../controllers/locale_controller.dart';
 import '../controllers/theme_controller.dart';
+import '../screens/display_name_screen.dart';
 import '../controllers/text_size_controller.dart';
 
 class SettingsPanel extends ConsumerStatefulWidget {
-  const SettingsPanel({super.key});
+  const SettingsPanel({required this.uid, super.key});
+
+  final String uid;
 
   @override
   ConsumerState<SettingsPanel> createState() => _SettingsPanelState();
@@ -190,6 +193,9 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
     final locale = ref.watch(localeControllerProvider);
     final themeMode = ref.watch(themeControllerProvider);
     final textSize = ref.watch(textSizeControllerProvider);
+    final profileProvider = displayNameProvider(widget.uid);
+    final profile = ref.watch(profileProvider);
+    final name = profile.asData?.value;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -288,6 +294,52 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
             ),
           ),
         ),
+        DecoratedBox(
+          decoration: AppTheme.of(context).card,
+          child: ClipRRect(
+            borderRadius: AppTheme.corners,
+            child: CupertinoListTile(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppTheme.medium,
+                vertical: AppTheme.small,
+              ),
+              leading: Icon(
+                CupertinoIcons.person_crop_circle,
+                color: AppTheme.of(context).accent,
+              ),
+              title: Text(strings.displayName),
+              subtitle: profile.hasValue
+                  ? Text(
+                      name == null || name.isEmpty
+                          ? strings.displayNameUnset
+                          : name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  : null,
+              trailing: profile.isLoading
+                  ? const CupertinoActivityIndicator()
+                  : const CupertinoListTileChevron(),
+              onTap: profile.isLoading
+                  ? null
+                  : () {
+                      if (profile.hasError) {
+                        ref.invalidate(profileProvider);
+                        return;
+                      }
+                      Navigator.of(context).push<void>(
+                        CupertinoPageRoute(
+                          builder: (_) => DisplayNameScreen(
+                            uid: widget.uid,
+                            initialName: name,
+                          ),
+                        ),
+                      );
+                    },
+            ),
+          ),
+        ),
+        const SizedBox(height: AppTheme.small),
         DecoratedBox(
           decoration: AppTheme.of(context).card,
           child: ClipRRect(

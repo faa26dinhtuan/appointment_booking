@@ -27,5 +27,17 @@ class AuthRepository {
     }
   }
 
+  Stream<String?> displayNameChanges(String uid) => _auth.userChanges().map(
+    (user) => user?.uid == uid ? user?.displayName : null,
+  );
+
+  Future<void> updateDisplayName(String uid, String name) async {
+    final user = _auth.currentUser;
+    if (user == null || user.uid != uid) {
+      throw FirebaseAuthException(code: 'user-token-expired');
+    }
+    await user.updateDisplayName(name.isEmpty ? null : name);
+  }
+
   Future<void> signOut() => _auth.signOut();
 }
