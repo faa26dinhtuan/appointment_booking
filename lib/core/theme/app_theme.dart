@@ -26,6 +26,7 @@ final class AppTheme {
   final Color success;
   final Color danger;
 
+  static const fontFamily = 'Inter';
   static const bodyTextSize = 16.0;
   static const headingTextSize = 30.0;
   static const small = 8.0;
@@ -102,7 +103,46 @@ final class AppTheme {
     border: Border.all(color: border),
   );
 
+  CupertinoTextThemeData get _cupertinoTextTheme {
+    final defaults = CupertinoTextThemeData(primaryColor: accent);
+    return defaults.copyWith(
+      textStyle: defaults.textStyle.copyWith(
+        color: ink,
+        fontSize: bodyTextSize,
+        fontFamily: fontFamily,
+      ),
+      actionTextStyle: defaults.actionTextStyle.copyWith(
+        fontFamily: fontFamily,
+      ),
+      actionSmallTextStyle: defaults.actionSmallTextStyle.copyWith(
+        fontFamily: fontFamily,
+      ),
+      tabLabelTextStyle: defaults.tabLabelTextStyle.copyWith(
+        fontFamily: fontFamily,
+      ),
+      navTitleTextStyle: defaults.navTitleTextStyle.copyWith(
+        fontFamily: fontFamily,
+      ),
+      navLargeTitleTextStyle: defaults.navLargeTitleTextStyle.copyWith(
+        color: ink,
+        fontSize: headingTextSize,
+        fontWeight: FontWeight.w700,
+        fontFamily: fontFamily,
+      ),
+      navActionTextStyle: defaults.navActionTextStyle.copyWith(
+        fontFamily: fontFamily,
+      ),
+      pickerTextStyle: defaults.pickerTextStyle.copyWith(
+        fontFamily: fontFamily,
+      ),
+      dateTimePickerTextStyle: defaults.dateTimePickerTextStyle.copyWith(
+        fontFamily: fontFamily,
+      ),
+    );
+  }
+
   ThemeData _build(Brightness brightness) => ThemeData(
+    fontFamily: fontFamily,
     colorScheme: ColorScheme.fromSeed(
       seedColor: accent,
       brightness: brightness,
@@ -115,16 +155,7 @@ final class AppTheme {
           : surface,
       scaffoldBackgroundColor: background,
       barBackgroundColor: surface.withAlpha(242),
-      textTheme: CupertinoTextThemeData(
-        textStyle: TextStyle(color: ink, fontSize: bodyTextSize),
-        navLargeTitleTextStyle: const CupertinoTextThemeData()
-            .navLargeTitleTextStyle
-            .copyWith(
-              color: ink,
-              fontSize: headingTextSize,
-              fontWeight: FontWeight.w700,
-            ),
-      ),
+      textTheme: _cupertinoTextTheme,
     ),
     scaffoldBackgroundColor: background,
     appBarTheme: AppBarTheme(backgroundColor: background),
