@@ -42,10 +42,7 @@ Future<void> main() async {
 }
 
 Future<void> _initializeFirebase() async {
-  await Future.wait<void>([
-    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
-    Future<void>.delayed(const Duration(milliseconds: 650)),
-  ], eagerError: true);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 }
 
 class MyApp extends ConsumerWidget {
@@ -85,39 +82,54 @@ class MyApp extends ConsumerWidget {
           ),
         );
       },
-      home: FutureBuilder<void>(
-        future: initialization,
-        builder: (context, snapshot) {
+      home: _StartupGate(initialization: initialization),
+    );
+  }
+}
+
+class _StartupGate extends StatefulWidget {
+  const _StartupGate({required this.initialization});
+
+  final Future<void> initialization;
+
+  @override
+  State<_StartupGate> createState() => _StartupGateState();
+}
+
+class _StartupGateState extends State<_StartupGate> {
+  bool _introFinished = false;
+
+  void _finishIntro() => setState(() => _introFinished = true);
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<void>(
+      future: widget.initialization,
+      builder: (context, snapshot) => Consumer(
+        builder: (context, ref, _) {
           if (snapshot.hasError) {
             return _AuthStatus(
               child: Text(AppStrings.of(context).firebaseStartupError),
             );
           }
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const AppSplashScreen();
+
+          if (snapshot.connectionState == ConnectionState.done) {
+            final session = ref.watch(authSessionProvider);
+            if (session.hasError) {
+              return _AuthStatus(child: Text(AppStrings.of(context).authError));
+            }
+            if (_introFinished && session.hasValue) {
+              final uid = session.requireValue;
+              return uid == null
+                  ? const LoginScreen()
+                  : AppointmentShell(key: ValueKey(uid), uid: uid);
+            }
           }
-          return const _AuthGate();
+
+          return AppSplashScreen(onFinished: _finishIntro);
         },
       ),
     );
-  }
-}
-
-class _AuthGate extends ConsumerWidget {
-  const _AuthGate();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ref
-        .watch(authSessionProvider)
-        .when(
-          data: (uid) => uid == null
-              ? const LoginScreen()
-              : AppointmentShell(key: ValueKey(uid), uid: uid),
-          loading: AppSplashScreen.new,
-          error: (_, _) =>
-              _AuthStatus(child: Text(AppStrings.of(context).authError)),
-        );
   }
 }
 
