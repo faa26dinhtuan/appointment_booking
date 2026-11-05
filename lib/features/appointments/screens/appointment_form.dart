@@ -190,6 +190,8 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
     final date = _date;
     final time = _time;
     final error = _error;
+    final theme = AppTheme.of(context);
+    final strings = AppStrings.of(context);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text(
@@ -223,20 +225,43 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
                   maxLines: 5,
                 ),
                 const SizedBox(height: AppTheme.medium),
-                CupertinoButton.tinted(
-                  onPressed: _saving ? null : _pickDate,
-                  child: Text(
-                    date == null
-                        ? AppStrings.of(context).chooseDate
-                        : AppStrings.of(context).formatDate(date),
-                  ),
-                ),
-                CupertinoButton.tinted(
-                  onPressed: _saving ? null : _pickTime,
-                  child: Text(
-                    time == null
-                        ? AppStrings.of(context).chooseTime
-                        : AppStrings.formatTime(context, time),
+                DecoratedBox(
+                  decoration: theme.card,
+                  child: ClipRRect(
+                    borderRadius: AppTheme.pill,
+                    child: Column(
+                      children: [
+                        CupertinoListTile(
+                          leading: Icon(
+                            CupertinoIcons.calendar,
+                            color: theme.accent,
+                          ),
+                          title: Text(strings.date),
+                          subtitle: Text(
+                            date == null
+                                ? strings.chooseDate
+                                : strings.formatDate(date),
+                          ),
+                          trailing: const CupertinoListTileChevron(),
+                          onTap: _saving ? null : _pickDate,
+                        ),
+                        Divider(height: 1, color: theme.border),
+                        CupertinoListTile(
+                          leading: Icon(
+                            CupertinoIcons.clock,
+                            color: theme.accent,
+                          ),
+                          title: Text(strings.time),
+                          subtitle: Text(
+                            time == null
+                                ? strings.chooseTime
+                                : AppStrings.formatTime(context, time),
+                          ),
+                          trailing: const CupertinoListTileChevron(),
+                          onTap: _saving ? null : _pickTime,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: AppTheme.medium),
@@ -249,11 +274,14 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
                 ),
                 const SizedBox(height: AppTheme.large),
                 if (error != null) ...[
-                  Semantics(liveRegion: true, child: Text(error)),
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(error, style: TextStyle(color: theme.danger)),
+                  ),
                   const SizedBox(height: AppTheme.small),
                 ],
                 CupertinoButton.filled(
-                  borderRadius: AppTheme.corners,
+                  borderRadius: AppTheme.pill,
                   onPressed: _saving ? null : _save,
                   child: _saving
                       ? const CupertinoActivityIndicator()

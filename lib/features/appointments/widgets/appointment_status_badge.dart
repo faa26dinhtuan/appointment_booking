@@ -17,14 +17,14 @@ class AppointmentStatusBadge extends StatelessWidget {
       AppointmentStatus.completed => CupertinoIcons.check_mark_circled,
       AppointmentStatus.canceled => CupertinoIcons.xmark_circle,
     };
-    final color = status == AppointmentStatus.upcoming
-        ? AppTheme.of(context).accent
-        : AppTheme.of(context).muted;
+    final theme = AppTheme.of(context);
+    final (color, background) = switch (status) {
+      AppointmentStatus.upcoming => (theme.accent, theme.sky),
+      AppointmentStatus.completed => (theme.success, theme.background),
+      AppointmentStatus.canceled => (theme.danger, theme.peach),
+    };
     return DecoratedBox(
-      decoration: BoxDecoration(
-        color: AppTheme.of(context).background,
-        borderRadius: AppTheme.corners,
-      ),
+      decoration: BoxDecoration(color: background, borderRadius: AppTheme.pill),
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: AppTheme.small,
@@ -38,7 +38,11 @@ class AppointmentStatusBadge extends StatelessWidget {
             Flexible(
               child: Text(
                 label,
-                style: TextStyle(color: color, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  color: color,
+                  fontWeight: FontWeight.w600,
+                  fontSize: AppTheme.captionTextSize,
+                ),
               ),
             ),
           ],

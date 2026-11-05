@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart'
-    show DateUtils, ScaffoldMessenger, SnackBar, TimeOfDay;
+    show DateUtils, ScaffoldMessenger, SnackBar;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
@@ -9,7 +9,7 @@ import '../../../l10n/app_strings.dart';
 import '../controllers/appointments_controller.dart';
 import '../screens/appointment_detail_screen.dart';
 import 'appointment_empty_state.dart';
-import 'appointment_status_badge.dart';
+import 'appointment_card.dart';
 
 class AppointmentList extends ConsumerStatefulWidget {
   const AppointmentList({required this.uid, this.day, super.key});
@@ -121,14 +121,16 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
                 ],
                 CupertinoSearchTextField(
                   placeholder: AppStrings.of(context).searchAppointments,
-                  decoration: AppTheme.of(context).field,
+                  decoration: AppTheme.of(context).card
+                      .copyWith(boxShadow: const []),
                   onChanged: (value) =>
                       setState(() => _query = value.trim().toLowerCase()),
                 ),
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: CupertinoButton(
+                  child: CupertinoButton.tinted(
                     onPressed: _chooseStatus,
+                    borderRadius: AppTheme.pill,
                     child: Text(
                       AppStrings.of(context).statusFilterLabel(_status),
                     ),
@@ -147,49 +149,10 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
                 for (final appointment in visible)
                   Padding(
                     padding: const EdgeInsets.only(bottom: AppTheme.medium),
-                    child: CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () => _openDetails(appointment.id),
-                      child: Container(
-                        width: double.infinity,
-                        decoration: AppTheme.of(context).card,
-                        child: Padding(
-                          padding: const EdgeInsets.all(AppTheme.medium),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                appointment.title,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: AppTheme.of(context).ink,
-                                ),
-                              ),
-                              const SizedBox(height: AppTheme.small),
-                              Text(
-                                AppStrings.of(context)
-                                    .formatDate(appointment.startsAt),
-                              ),
-                              Text(
-                                AppStrings.formatTime(
-                                  context,
-                                  TimeOfDay.fromDateTime(appointment.startsAt),
-                                ),
-                              ),
-                              if (appointment.location.isNotEmpty)
-                                Text(appointment.location),
-                              if (appointment.notes.isNotEmpty)
-                                Text(appointment.notes),
-                              const SizedBox(height: AppTheme.small),
-                              AppointmentStatusBadge(
-                                status: appointment.status,
-                              ),
-                              if (appointment.pending)
-                                Text(AppStrings.of(context).appointmentPending),
-                            ],
-                          ),
-                        ),
-                      ),
+                    child: AppointmentCard(
+                      appointment: appointment,
+                      showTimeline: day != null,
+                      onTap: () => _openDetails(appointment.id),
                     ),
                   ),
               ],

@@ -267,6 +267,22 @@ class AppStrings {
     ).format(DateTime(2000, 1, 1, time.hour, time.minute));
   }
 
+  String get agendaHeading => _isEnglish
+      ? 'Make time for what matters'
+      : 'Dành thời gian cho điều quan trọng';
+  String get agendaDescription => _isEnglish
+      ? 'Plan and keep track of your appointments in one place.'
+      : 'Sắp xếp và theo dõi các cuộc hẹn ở một nơi.';
+  String get agendaSection =>
+      _isEnglish ? 'Your appointments' : 'Lịch hẹn của bạn';
+  String get dailySchedule => _isEnglish ? 'Daily schedule' : 'Lịch trong ngày';
+
+  String weekdayAbbreviation(DateTime date) =>
+      DateFormat.E(locale.languageCode).format(date);
+
+  String dayNumber(DateTime date) =>
+      DateFormat.d(locale.languageCode).format(date);
+
   String statusLabel(AppointmentStatus? status) => switch (status) {
     AppointmentStatus.upcoming => appointmentUpcoming,
     AppointmentStatus.completed => appointmentCompleted,

@@ -127,6 +127,7 @@ class _AppointmentDetailScreenState
 
   @override
   Widget build(BuildContext context) {
+    final theme = AppTheme.of(context);
     final provider = appointmentsProvider(widget.uid);
     final content = _deleting
         ? const Center(child: CupertinoActivityIndicator())
@@ -176,23 +177,53 @@ class _AppointmentDetailScreenState
                             children: [
                               Text(
                                 appointment.title,
-                                style: CupertinoTheme.of(context)
-                                    .textTheme
-                                    .navTitleTextStyle,
+                                style: theme.sectionTitle,
                               ),
                               const SizedBox(height: AppTheme.medium),
                               AppointmentStatusBadge(
                                 status: appointment.status,
                               ),
                               const SizedBox(height: AppTheme.medium),
-                              Text(
-                                AppStrings.of(context)
-                                    .formatDate(appointment.startsAt),
-                              ),
-                              Text(
-                                AppStrings.formatTime(
-                                  context,
-                                  TimeOfDay.fromDateTime(appointment.startsAt),
+                              DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: theme.sky,
+                                  borderRadius: AppTheme.corners,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(
+                                    AppTheme.medium,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        CupertinoIcons.calendar,
+                                        color: theme.accent,
+                                      ),
+                                      const SizedBox(width: AppTheme.medium),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              AppStrings.of(context).formatDate(
+                                                appointment.startsAt,
+                                              ),
+                                            ),
+                                            Text(
+                                              AppStrings.formatTime(
+                                                context,
+                                                TimeOfDay.fromDateTime(
+                                                  appointment.startsAt,
+                                                ),
+                                              ),
+                                              style: theme.caption,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                               if (appointment.location.isNotEmpty) ...[
