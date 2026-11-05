@@ -55,7 +55,7 @@ class MyApp extends ConsumerWidget {
     final use24Hour = ref.watch(timeFormatControllerProvider);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      onGenerateTitle: (context) => AppStrings.of(context).appName,
+      title: AppStrings.productName,
       locale: ref.watch(localeControllerProvider),
       supportedLocales: AppStrings.supportedLocales,
       localizationsDelegates: [

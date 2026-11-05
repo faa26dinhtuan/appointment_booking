@@ -35,7 +35,7 @@ class _AboutScreenState extends State<AboutScreen> {
                 ),
                 const SizedBox(height: AppTheme.medium),
                 Text(
-                  strings.appName,
+                  AppStrings.productName,
                   textAlign: TextAlign.center,
                   style: CupertinoTheme.of(context)
                       .textTheme

@@ -13,6 +13,7 @@ class AppStrings {
   final AppDateFormat dateFormat;
 
   final Locale locale;
+  static const productName = 'Appointment Booking';
   static const vietnamese = Locale('vi');
   static const english = Locale('en');
   static const supportedLocales = [vietnamese, english];
