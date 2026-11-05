@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +13,8 @@ import '../widgets/appointment_list.dart';
 import '../widgets/appointment_week_strip.dart';
 import '../../settings/widgets/settings_panel.dart';
 import 'appointment_form.dart';
+
+enum _AppointmentFeedback { saved, deleted }
 
 class AppointmentShell extends StatefulWidget {
   const AppointmentShell({required this.uid, super.key});
@@ -28,6 +32,23 @@ class _AppointmentShellState extends State<AppointmentShell> {
   int _tab = 0;
   DateTime _day = DateUtils.dateOnly(DateTime.now());
 
+  _AppointmentFeedback? _feedback;
+  Timer? _feedbackTimer;
+
+  @override
+  void dispose() {
+    _feedbackTimer?.cancel();
+    super.dispose();
+  }
+
+  void _showFeedback(_AppointmentFeedback feedback) {
+    _feedbackTimer?.cancel();
+    setState(() => _feedback = feedback);
+    _feedbackTimer = Timer(const Duration(seconds: 5), () {
+      setState(() => _feedback = null);
+    });
+  }
+
   Future<void> _pickDay() async {
     final day = await showDateTimeSheet(
       context: context,
@@ -44,9 +65,7 @@ class _AppointmentShellState extends State<AppointmentShell> {
       CupertinoPageRoute(builder: (_) => AppointmentForm(uid: widget.uid)),
     );
     if (mounted && saved == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppStrings.of(context).appointmentSaved)),
-      );
+      _showFeedback(_AppointmentFeedback.saved);
     }
   }
 
@@ -123,9 +142,37 @@ class _AppointmentShellState extends State<AppointmentShell> {
                                 style: theme.sectionTitle,
                               ),
                               const SizedBox(height: AppTheme.small),
+                              if (_feedback case final feedback?)
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    bottom: AppTheme.medium,
+                                  ),
+                                  child: Semantics(
+                                    liveRegion: true,
+                                    child: DecoratedBox(
+                                      decoration: theme.card,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(
+                                          AppTheme.medium,
+                                        ),
+                                        child: Text(
+                                          switch (feedback) {
+                                            _AppointmentFeedback.saved =>
+                                              strings.appointmentSaved,
+                                            _AppointmentFeedback.deleted =>
+                                              strings.appointmentDeleted,
+                                          },
+                                          style: TextStyle(color: theme.success),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               AppointmentList(
                                 uid: widget.uid,
                                 day: isCalendar ? _day : null,
+                                onDeleted: () =>
+                                    _showFeedback(_AppointmentFeedback.deleted),
                               ),
                             ],
                           ),

@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart'
-    show DateUtils, ScaffoldMessenger, SnackBar;
+import 'package:flutter/material.dart' show DateUtils;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
@@ -12,10 +11,16 @@ import 'appointment_empty_state.dart';
 import 'appointment_card.dart';
 
 class AppointmentList extends ConsumerStatefulWidget {
-  const AppointmentList({required this.uid, this.day, super.key});
+  const AppointmentList({
+    required this.uid,
+    required this.onDeleted,
+    this.day,
+    super.key,
+  });
 
   final String uid;
   final DateTime? day;
+  final VoidCallback onDeleted;
 
   @override
   ConsumerState<AppointmentList> createState() => _AppointmentListState();
@@ -62,11 +67,7 @@ class _AppointmentListState extends ConsumerState<AppointmentList> {
         ),
       ),
     );
-    if (mounted && deleted == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppStrings.of(context).appointmentDeleted)),
-      );
-    }
+    if (mounted && deleted == true) widget.onDeleted();
   }
 
   @override
