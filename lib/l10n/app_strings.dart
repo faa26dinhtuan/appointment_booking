@@ -220,6 +220,14 @@ class AppStrings {
       : 'Chọn tên hiển thị trong app. Để trống nếu muốn bỏ tên.';
   String get saveProfile => _isEnglish ? 'Save' : 'Lưu';
 
+  String get settingsAbout => _isEnglish ? 'About' : 'Giới thiệu';
+  String get aboutDescription => _isEnglish
+      ? 'Organize and manage your personal appointments.'
+      : 'Sắp xếp và quản lý lịch hẹn cá nhân.';
+  String get aboutVersion => _isEnglish ? 'Version' : 'Phiên bản';
+  String get aboutVersionUnavailable =>
+      _isEnglish ? 'Unavailable' : 'Không đọc được';
+
   String statusLabel(AppointmentStatus? status) => switch (status) {
     AppointmentStatus.upcoming => appointmentUpcoming,
     AppointmentStatus.completed => appointmentCompleted,

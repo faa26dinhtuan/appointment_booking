@@ -10,6 +10,7 @@ import '../../auth/widgets/auth_notice.dart';
 import '../controllers/locale_controller.dart';
 import '../controllers/theme_controller.dart';
 import '../screens/display_name_screen.dart';
+import '../screens/about_screen.dart';
 import '../controllers/text_size_controller.dart';
 
 class SettingsPanel extends ConsumerStatefulWidget {
@@ -356,6 +357,31 @@ class _SettingsPanelState extends ConsumerState<SettingsPanel> {
               title: Text(AppStrings.of(context).signOut),
               trailing: _signingOut ? const CupertinoActivityIndicator() : null,
               onTap: _signingOut ? null : _signOut,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppTheme.large),
+        DecoratedBox(
+          decoration: AppTheme.of(context).card,
+          child: ClipRRect(
+            borderRadius: AppTheme.corners,
+            child: CupertinoListTile(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppTheme.medium,
+                vertical: AppTheme.small,
+              ),
+              leading: Icon(
+                CupertinoIcons.info_circle,
+                color: AppTheme.of(context).accent,
+              ),
+              title: Text(strings.settingsAbout),
+              trailing: const CupertinoListTileChevron(),
+              onTap: () {
+                HapticFeedback.selectionClick();
+                Navigator.of(context).push<void>(
+                  CupertinoPageRoute(builder: (_) => const AboutScreen()),
+                );
+              },
             ),
           ),
         ),
