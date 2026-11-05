@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/brand_assets.dart';
 import '../../../l10n/app_strings.dart';
 import '../auth_validation.dart';
 import '../controllers/auth_controller.dart';
@@ -43,8 +44,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         await showAuthNotice(
           context,
-          AppStrings.login,
-          authErrorMessage(error),
+          AppStrings.of(context).login,
+          authErrorMessage(error, AppStrings.of(context)),
         );
       }
     } finally {
@@ -63,30 +64,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               shrinkWrap: true,
               padding: const EdgeInsets.all(AppTheme.large),
               children: [
-                const Icon(
-                  CupertinoIcons.calendar,
-                  size: 40,
-                  color: AppTheme.accent,
+                Center(
+                  child: Image.asset(
+                    BrandAssets.loginIllustration,
+                    width: 180,
+                    height: 120,
+                    fit: BoxFit.contain,
+                    excludeFromSemantics: true,
+                  ),
                 ),
                 const SizedBox(height: AppTheme.medium),
-                const Text(
-                  AppStrings.login,
+                Text(
+                  AppStrings.of(context).login,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 34,
+                    fontSize: AppTheme.headingTextSize,
                     fontWeight: FontWeight.w700,
-                    color: AppTheme.ink,
+                    color: AppTheme.of(context).ink,
                   ),
                 ),
                 const SizedBox(height: AppTheme.small),
-                const Text(
-                  AppStrings.loginSubtitle,
+                Text(
+                  AppStrings.of(context).loginSubtitle,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: AppTheme.muted),
+                  style: TextStyle(color: AppTheme.of(context).muted),
                 ),
                 const SizedBox(height: AppTheme.large),
                 DecoratedBox(
-                  decoration: AppTheme.card,
+                  decoration: AppTheme.of(context).card,
                   child: Padding(
                     padding: const EdgeInsets.all(AppTheme.medium),
                     child: Form(
@@ -97,19 +102,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           children: [
                             CupertinoTextFormFieldRow(
                               controller: _email,
-                              placeholder: AppStrings.email,
-                              decoration: AppTheme.field,
+                              placeholder: AppStrings.of(context).email,
+                              decoration: AppTheme.of(context).field,
                               padding: const EdgeInsets.all(AppTheme.small),
                               keyboardType: TextInputType.emailAddress,
                               textInputAction: TextInputAction.next,
                               autofillHints: const [AutofillHints.username],
                               autocorrect: false,
-                              validator: AuthValidation.email,
+                              validator: (value) => AuthValidation.email(
+                                value,
+                                AppStrings.of(context),
+                              ),
                             ),
                             CupertinoTextFormFieldRow(
                               controller: _password,
-                              placeholder: AppStrings.password,
-                              decoration: AppTheme.field,
+                              placeholder: AppStrings.of(context).password,
+                              decoration: AppTheme.of(context).field,
                               padding: const EdgeInsets.all(AppTheme.small),
                               obscureText: _obscure,
                               autocorrect: false,
@@ -119,7 +127,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               onFieldSubmitted: (_) => _submit(),
                               validator: (value) =>
                                   value == null || value.isEmpty
-                                  ? AppStrings.passwordRequired
+                                  ? AppStrings.of(context).passwordRequired
                                   : null,
                             ),
                             Align(
@@ -129,8 +137,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     setState(() => _obscure = !_obscure),
                                 child: Text(
                                   _obscure
-                                      ? AppStrings.showPassword
-                                      : AppStrings.hidePassword,
+                                      ? AppStrings.of(context).showPassword
+                                      : AppStrings.of(context).hidePassword,
                                 ),
                               ),
                             ),
@@ -139,8 +147,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               onPressed: _busy ? null : _submit,
                               child: _busy
                                   ? const CupertinoActivityIndicator()
-                                  : const Text(
-                                      AppStrings.login,
+                                  : Text(
+                                      AppStrings.of(context).login,
                                       textAlign: TextAlign.center,
                                     ),
                             ),
@@ -162,7 +170,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 builder: (_) => const RegisterScreen(),
                               ),
                             ),
-                      child: const Text(AppStrings.register),
+                      child: Text(AppStrings.of(context).register),
                     ),
                     CupertinoButton(
                       onPressed: _busy
@@ -172,7 +180,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 builder: (_) => const ResetPasswordScreen(),
                               ),
                             ),
-                      child: const Text(AppStrings.forgotPassword),
+                      child: Text(AppStrings.of(context).forgotPassword),
                     ),
                   ],
                 ),

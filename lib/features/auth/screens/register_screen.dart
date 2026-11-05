@@ -44,8 +44,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       if (mounted) {
         await showAuthNotice(
           context,
-          AppStrings.register,
-          authErrorMessage(error),
+          AppStrings.of(context).register,
+          authErrorMessage(error, AppStrings.of(context)),
         );
       }
     } finally {
@@ -56,9 +56,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text(AppStrings.register),
-        previousPageTitle: AppStrings.login,
+      navigationBar: CupertinoNavigationBar(
+        middle: Text(AppStrings.of(context).register),
+        previousPageTitle: AppStrings.of(context).login,
       ),
       child: SafeArea(
         child: Center(
@@ -69,21 +69,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               padding: const EdgeInsets.all(AppTheme.large),
               children: [
                 Text(
-                  AppStrings.createAccount,
+                  AppStrings.of(context).createAccount,
                   textAlign: TextAlign.center,
                   style: CupertinoTheme.of(context)
                       .textTheme
                       .navLargeTitleTextStyle,
                 ),
                 const SizedBox(height: AppTheme.small),
-                const Text(
-                  AppStrings.registerSubtitle,
+                Text(
+                  AppStrings.of(context).registerSubtitle,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: AppTheme.muted),
+                  style: TextStyle(color: AppTheme.of(context).muted),
                 ),
                 const SizedBox(height: AppTheme.large),
                 DecoratedBox(
-                  decoration: AppTheme.card,
+                  decoration: AppTheme.of(context).card,
                   child: Padding(
                     padding: const EdgeInsets.all(AppTheme.medium),
                     child: Form(
@@ -93,28 +93,34 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         children: [
                           CupertinoTextFormFieldRow(
                             controller: _email,
-                            placeholder: AppStrings.email,
-                            decoration: AppTheme.field,
+                            placeholder: AppStrings.of(context).email,
+                            decoration: AppTheme.of(context).field,
                             padding: const EdgeInsets.all(AppTheme.small),
                             keyboardType: TextInputType.emailAddress,
                             textInputAction: TextInputAction.next,
                             autocorrect: false,
-                            validator: AuthValidation.email,
+                            validator: (value) => AuthValidation.email(
+                              value,
+                              AppStrings.of(context),
+                            ),
                           ),
                           CupertinoTextFormFieldRow(
                             controller: _password,
-                            placeholder: AppStrings.password,
-                            decoration: AppTheme.field,
+                            placeholder: AppStrings.of(context).password,
+                            decoration: AppTheme.of(context).field,
                             padding: const EdgeInsets.all(AppTheme.small),
                             obscureText: _obscure,
                             autocorrect: false,
                             enableSuggestions: false,
                             textInputAction: TextInputAction.next,
-                            validator: AuthValidation.newPassword,
+                            validator: (value) => AuthValidation.newPassword(
+                              value,
+                              AppStrings.of(context),
+                            ),
                           ),
                           CupertinoTextFormFieldRow(
-                            placeholder: AppStrings.confirmPassword,
-                            decoration: AppTheme.field,
+                            placeholder: AppStrings.of(context).confirmPassword,
+                            decoration: AppTheme.of(context).field,
                             padding: const EdgeInsets.all(AppTheme.small),
                             obscureText: _obscure,
                             autocorrect: false,
@@ -123,10 +129,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             onFieldSubmitted: (_) => _submit(),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return AppStrings.confirmPasswordRequired;
+                                return AppStrings.of(context)
+                                    .confirmPasswordRequired;
                               }
                               if (value != _password.text) {
-                                return AppStrings.passwordMismatch;
+                                return AppStrings.of(context).passwordMismatch;
                               }
                               return null;
                             },
@@ -138,8 +145,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                   setState(() => _obscure = !_obscure),
                               child: Text(
                                 _obscure
-                                    ? AppStrings.showPassword
-                                    : AppStrings.hidePassword,
+                                    ? AppStrings.of(context).showPassword
+                                    : AppStrings.of(context).hidePassword,
                               ),
                             ),
                           ),
@@ -148,8 +155,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             onPressed: _busy ? null : _submit,
                             child: _busy
                                 ? const CupertinoActivityIndicator()
-                                : const Text(
-                                    AppStrings.register,
+                                : Text(
+                                    AppStrings.of(context).register,
                                     textAlign: TextAlign.center,
                                   ),
                           ),

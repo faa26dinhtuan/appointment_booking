@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/brand_assets.dart';
 import '../../../l10n/app_strings.dart';
 import '../../../core/widgets/date_time_sheet.dart';
+import '../widgets/agenda_banner.dart';
 import '../widgets/appointment_list.dart';
+import '../widgets/appointment_week_strip.dart';
 import '../../settings/widgets/settings_panel.dart';
 import 'appointment_form.dart';
 
@@ -19,6 +22,9 @@ class AppointmentShell extends StatefulWidget {
 }
 
 class _AppointmentShellState extends State<AppointmentShell> {
+  static final _firstDate = DateTime(1900);
+  static final _lastDate = DateTime(2200);
+
   int _tab = 0;
   DateTime _day = DateUtils.dateOnly(DateTime.now());
 
@@ -26,8 +32,8 @@ class _AppointmentShellState extends State<AppointmentShell> {
     final day = await showDateTimeSheet(
       context: context,
       initial: _day,
-      minimumDate: DateTime(1900),
-      maximumDate: DateTime(2200),
+      minimumDate: _firstDate,
+      maximumDate: _lastDate,
     );
     if (mounted && day != null) setState(() => _day = day);
   }
@@ -39,15 +45,35 @@ class _AppointmentShellState extends State<AppointmentShell> {
     );
     if (mounted && saved == true) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppStrings.appointmentSaved)),
+        SnackBar(content: Text(AppStrings.of(context).appointmentSaved)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = AppTheme.of(context);
+    final strings = AppStrings.of(context);
     final isCalendar = _tab == 1;
     final isSettings = _tab == 2;
+    BottomNavigationBarItem tabItem(String icon, String label) =>
+        BottomNavigationBarItem(
+          icon: SizedBox.square(
+            dimension: 28,
+            child: Center(child: BrandAssets.icon(icon)),
+          ),
+          activeIcon: DecoratedBox(
+            decoration: BoxDecoration(
+              color: theme.sky,
+              borderRadius: AppTheme.pill,
+            ),
+            child: SizedBox.square(
+              dimension: 28,
+              child: Center(child: BrandAssets.icon(icon)),
+            ),
+          ),
+          label: label,
+        );
     return Scaffold(
       body: SafeArea(
         bottom: false,
@@ -56,14 +82,14 @@ class _AppointmentShellState extends State<AppointmentShell> {
             CupertinoSliverNavigationBar(
               largeTitle: Text(
                 isSettings
-                    ? AppStrings.settings
+                    ? AppStrings.of(context).settings
                     : isCalendar
-                    ? AppStrings.calendar
-                    : AppStrings.appName,
+                    ? AppStrings.of(context).calendar
+                    : AppStrings.of(context).appName,
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.all(AppTheme.large),
+              padding: const EdgeInsets.all(AppTheme.pagePadding),
               sliver: SliverToBoxAdapter(
                 child: Center(
                   child: ConstrainedBox(
@@ -71,24 +97,32 @@ class _AppointmentShellState extends State<AppointmentShell> {
                       maxWidth: AppTheme.contentWidth,
                     ),
                     child: isSettings
-                        ? const SettingsPanel()
+                        ? SettingsPanel(uid: widget.uid)
                         : Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              if (isCalendar) ...[
-                                CupertinoButton.tinted(
-                                  onPressed: _pickDay,
-                                  child: Text(AppStrings.formatDate(_day)),
-                                ),
-                                const SizedBox(height: AppTheme.medium),
-                              ],
-
-                              if (!isCalendar)
-                                CupertinoButton.filled(
-                                  onPressed: _openForm,
-                                  child: const Text(AppStrings.addAppointment),
-                                ),
-                              const SizedBox(height: AppTheme.medium),
+                              if (isCalendar)
+                                AppointmentWeekStrip(
+                                  selected: _day,
+                                  firstDate: _firstDate,
+                                  lastDate: _lastDate,
+                                  onOpenPicker: _pickDay,
+                                  onSelect: (day) {
+                                    if (DateUtils.isSameDay(day, _day)) return;
+                                    HapticFeedback.selectionClick();
+                                    setState(() => _day = day);
+                                  },
+                                )
+                              else
+                                AgendaBanner(onAdd: _openForm),
+                              const SizedBox(height: AppTheme.large),
+                              Text(
+                                isCalendar
+                                    ? strings.dailySchedule
+                                    : strings.agendaSection,
+                                style: theme.sectionTitle,
+                              ),
+                              const SizedBox(height: AppTheme.small),
                               AppointmentList(
                                 uid: widget.uid,
                                 day: isCalendar ? _day : null,
@@ -102,27 +136,48 @@ class _AppointmentShellState extends State<AppointmentShell> {
           ],
         ),
       ),
-      bottomNavigationBar: CupertinoTabBar(
-        currentIndex: _tab,
-        onTap: (index) {
-          if (index == _tab) return;
-          HapticFeedback.selectionClick();
-          setState(() => _tab = index);
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.list_bullet),
-            label: AppStrings.appName,
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppTheme.pagePadding,
+            AppTheme.small,
+            AppTheme.pagePadding,
+            AppTheme.small,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.calendar),
-            label: AppStrings.calendar,
+          child: Center(
+            heightFactor: 1,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: AppTheme.contentWidth,
+              ),
+              child: DecoratedBox(
+                decoration: theme.card.copyWith(borderRadius: AppTheme.pill),
+                child: ClipRRect(
+                  borderRadius: AppTheme.pill,
+                  child: CupertinoTabBar(
+                    backgroundColor: theme.surface,
+                    activeColor: theme.accent,
+                    inactiveColor: theme.muted,
+                    border: const Border(),
+                    currentIndex: _tab,
+                    onTap: (index) {
+                      if (index == _tab) return;
+                      FocusScope.of(context).unfocus();
+                      HapticFeedback.selectionClick();
+                      setState(() => _tab = index);
+                    },
+                    items: [
+                      tabItem(BrandAssets.appointmentList, strings.appName),
+                      tabItem(BrandAssets.calendar, strings.calendar),
+                      tabItem(BrandAssets.settings, strings.settings),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.settings),
-            label: AppStrings.settings,
-          ),
-        ],
+        ),
       ),
     );
   }

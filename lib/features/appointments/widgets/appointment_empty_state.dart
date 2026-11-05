@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/brand_assets.dart';
 import '../../../l10n/app_strings.dart';
 
 class AppointmentEmptyState extends StatelessWidget {
@@ -11,27 +11,34 @@ class AppointmentEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = AppTheme.of(context);
     return DecoratedBox(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: AppTheme.corners,
-        border: Border.all(color: theme.colorScheme.outlineVariant),
-      ),
+      decoration: theme.card,
       child: Padding(
         padding: const EdgeInsets.all(AppTheme.large),
         child: Column(
           children: [
-            Icon(CupertinoIcons.calendar, color: theme.colorScheme.primary),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: theme.sky,
+                borderRadius: AppTheme.pill,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(AppTheme.medium),
+                child: BrandAssets.icon(BrandAssets.calendarEmpty, size: 40),
+              ),
+            ),
             const SizedBox(height: AppTheme.medium),
             Text(
-              AppStrings.emptyTitle,
-              style: theme.textTheme.titleLarge,
+              AppStrings.of(context).emptyTitle,
+              style: theme.sectionTitle,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppTheme.small),
             Text(
-              isCalendar ? AppStrings.emptyDay : AppStrings.emptyDescription,
+              isCalendar
+                  ? AppStrings.of(context).emptyDay
+                  : AppStrings.of(context).emptyDescription,
               textAlign: TextAlign.center,
             ),
           ],

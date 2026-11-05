@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/brand_assets.dart';
 import '../../../core/widgets/date_time_sheet.dart';
 import '../../../data/models/appointment.dart';
 import '../../../l10n/app_strings.dart';
@@ -79,17 +80,17 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
     final confirmed = await showCupertinoDialog<bool>(
       context: context,
       builder: (dialogContext) => CupertinoAlertDialog(
-        title: const Text(AppStrings.appointmentConflictTitle),
-        content: const Text(AppStrings.appointmentConflictMessage),
+        title: Text(AppStrings.of(context).appointmentConflictTitle),
+        content: Text(AppStrings.of(context).appointmentConflictMessage),
         actions: [
           CupertinoDialogAction(
             isDefaultAction: true,
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text(AppStrings.appointmentChooseAnotherTime),
+            child: Text(AppStrings.of(context).appointmentChooseAnotherTime),
           ),
           CupertinoDialogAction(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text(AppStrings.appointmentSaveAnyway),
+            child: Text(AppStrings.of(context).appointmentSaveAnyway),
           ),
         ],
       ),
@@ -103,11 +104,13 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
     final date = _date;
     final time = _time;
     if (title.isEmpty) {
-      setState(() => _error = AppStrings.appointmentTitleRequired);
+      setState(() => _error = AppStrings.of(context).appointmentTitleRequired);
       return;
     }
     if (date == null || time == null) {
-      setState(() => _error = AppStrings.appointmentDateTimeRequired);
+      setState(
+        () => _error = AppStrings.of(context).appointmentDateTimeRequired,
+      );
       return;
     }
     final selected = DateTime(
@@ -125,7 +128,7 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
         original.minute == selected.minute;
     final startsAt = sameTime ? original : selected;
     if (!sameTime && !startsAt.isAfter(DateTime.now())) {
-      setState(() => _error = AppStrings.appointmentMustBeFuture);
+      setState(() => _error = AppStrings.of(context).appointmentMustBeFuture);
       return;
     }
     FocusScope.of(context).unfocus();
@@ -147,7 +150,9 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
         if (conflict && !await _confirmTimeConflict()) return;
         if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
         if (!startsAt.isAfter(DateTime.now())) {
-          setState(() => _error = AppStrings.appointmentMustBeFuture);
+          setState(
+            () => _error = AppStrings.of(context).appointmentMustBeFuture,
+          );
           return;
         }
       }
@@ -165,15 +170,16 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
     } on FirebaseException catch (error) {
       if (mounted) {
         final message = switch (error.code) {
-          'unavailable' ||
-          'deadline-exceeded' => AppStrings.appointmentConflictNetworkError,
-          _ => AppStrings.appointmentSaveError,
+          'unavailable' || 'deadline-exceeded' => AppStrings.of(
+            context,
+          ).appointmentConflictNetworkError,
+          _ => AppStrings.of(context).appointmentSaveError,
         };
         setState(() => _error = message);
       }
     } catch (_) {
       if (mounted) {
-        setState(() => _error = AppStrings.appointmentSaveError);
+        setState(() => _error = AppStrings.of(context).appointmentSaveError);
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -185,12 +191,14 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
     final date = _date;
     final time = _time;
     final error = _error;
+    final theme = AppTheme.of(context);
+    final strings = AppStrings.of(context);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text(
           widget.appointment == null
-              ? AppStrings.addAppointment
-              : AppStrings.editAppointment,
+              ? AppStrings.of(context).addAppointment
+              : AppStrings.of(context).editAppointment,
         ),
       ),
       child: SafeArea(
@@ -203,60 +211,82 @@ class _AppointmentFormState extends ConsumerState<AppointmentForm> {
                 CupertinoTextField(
                   controller: _title,
                   enabled: !_saving,
-                  placeholder: AppStrings.title,
-                  decoration: AppTheme.field,
+                  placeholder: AppStrings.of(context).title,
+                  decoration: AppTheme.of(context).field,
                   padding: const EdgeInsets.all(AppTheme.medium),
                 ),
                 const SizedBox(height: AppTheme.medium),
                 CupertinoTextField(
                   controller: _notes,
                   enabled: !_saving,
-                  placeholder: AppStrings.notes,
-                  decoration: AppTheme.field,
+                  placeholder: AppStrings.of(context).notes,
+                  decoration: AppTheme.of(context).field,
                   padding: const EdgeInsets.all(AppTheme.medium),
                   minLines: 3,
                   maxLines: 5,
                 ),
                 const SizedBox(height: AppTheme.medium),
-                CupertinoButton.tinted(
-                  onPressed: _saving ? null : _pickDate,
-                  child: Text(
-                    date == null
-                        ? AppStrings.chooseDate
-                        : AppStrings.formatDate(date),
-                  ),
-                ),
-                CupertinoButton.tinted(
-                  onPressed: _saving ? null : _pickTime,
-                  child: Text(
-                    time == null ? AppStrings.chooseTime : time.format(context),
+                DecoratedBox(
+                  decoration: theme.card,
+                  child: ClipRRect(
+                    borderRadius: AppTheme.pill,
+                    child: Column(
+                      children: [
+                        CupertinoListTile(
+                          leading: BrandAssets.icon(BrandAssets.calendarCheck),
+                          title: Text(strings.date),
+                          subtitle: Text(
+                            date == null
+                                ? strings.chooseDate
+                                : strings.formatDate(date),
+                          ),
+                          trailing: const CupertinoListTileChevron(),
+                          onTap: _saving ? null : _pickDate,
+                        ),
+                        Divider(height: 1, color: theme.border),
+                        CupertinoListTile(
+                          leading: BrandAssets.icon(BrandAssets.clock),
+                          title: Text(strings.time),
+                          subtitle: Text(
+                            time == null
+                                ? strings.chooseTime
+                                : AppStrings.formatTime(context, time),
+                          ),
+                          trailing: const CupertinoListTileChevron(),
+                          onTap: _saving ? null : _pickTime,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: AppTheme.medium),
                 CupertinoTextField(
                   controller: _location,
                   enabled: !_saving,
-                  placeholder: AppStrings.location,
-                  decoration: AppTheme.field,
+                  placeholder: AppStrings.of(context).location,
+                  decoration: AppTheme.of(context).field,
                   padding: const EdgeInsets.all(AppTheme.medium),
                 ),
                 const SizedBox(height: AppTheme.large),
                 if (error != null) ...[
-                  Semantics(liveRegion: true, child: Text(error)),
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(error, style: TextStyle(color: theme.danger)),
+                  ),
                   const SizedBox(height: AppTheme.small),
                 ],
                 CupertinoButton.filled(
-                  borderRadius: AppTheme.corners,
+                  borderRadius: AppTheme.pill,
                   onPressed: _saving ? null : _save,
                   child: _saving
                       ? const CupertinoActivityIndicator()
-                      : const Text(AppStrings.saveAppointment),
+                      : Text(AppStrings.of(context).saveAppointment),
                 ),
                 if (_saving)
                   Semantics(
                     liveRegion: true,
-                    child: const Text(
-                      AppStrings.appointmentPending,
+                    child: Text(
+                      AppStrings.of(context).appointmentPending,
                       textAlign: TextAlign.center,
                     ),
                   ),

@@ -1,6 +1,6 @@
 {
-    "name": "appointment_booking",
-    "short_name": "appointment_booking",
+    "name": "Appointment Booking",
+    "short_name": "Appointment Booking",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

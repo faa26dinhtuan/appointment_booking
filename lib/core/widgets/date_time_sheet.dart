@@ -14,7 +14,7 @@ Future<DateTime?> showDateTimeSheet({
   return showCupertinoModalPopup<DateTime>(
     context: context,
     builder: (sheetContext) => DecoratedBox(
-      decoration: const BoxDecoration(color: AppTheme.surface),
+      decoration: BoxDecoration(color: AppTheme.of(context).surface),
       child: SafeArea(
         top: false,
         child: Column(
@@ -25,11 +25,11 @@ Future<DateTime?> showDateTimeSheet({
               children: [
                 CupertinoButton(
                   onPressed: () => Navigator.pop(sheetContext),
-                  child: const Text(AppStrings.cancel),
+                  child: Text(AppStrings.of(context).cancel),
                 ),
                 CupertinoButton(
                   onPressed: () => Navigator.pop(sheetContext, selection),
-                  child: const Text(AppStrings.done),
+                  child: Text(AppStrings.of(context).done),
                 ),
               ],
             ),
@@ -42,7 +42,7 @@ Future<DateTime?> showDateTimeSheet({
                 maximumDate: maximumDate,
                 minimumYear: minimumDate?.year ?? 1900,
                 maximumYear: maximumDate?.year ?? 2200,
-                use24hFormat: true,
+                use24hFormat: MediaQuery.alwaysUse24HourFormatOf(sheetContext),
                 onDateTimeChanged: (date) => selection = date,
               ),
             ),

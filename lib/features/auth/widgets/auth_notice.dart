@@ -15,7 +15,7 @@ Future<void> showAuthNotice(
       actions: [
         CupertinoDialogAction(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text(AppStrings.done),
+          child: Text(AppStrings.of(context).done),
         ),
       ],
     ),
