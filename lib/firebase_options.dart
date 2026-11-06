@@ -46,6 +46,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '926543050247',
     projectId: 'appointment-booking-ac2ff',
     authDomain: 'appointment-booking-ac2ff.firebaseapp.com',
+    measurementId: 'G-NQF0CV2ESG',
     storageBucket: 'appointment-booking-ac2ff.firebasestorage.app',
   );
 
