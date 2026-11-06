@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +17,7 @@ import 'features/settings/controllers/date_format_controller.dart';
 import 'features/settings/controllers/theme_controller.dart';
 import 'features/settings/controllers/text_size_controller.dart';
 import 'features/settings/controllers/time_format_controller.dart';
+import 'data/services/analytics_service.dart';
 import 'firebase_options.dart';
 import 'l10n/app_strings.dart';
 
@@ -43,6 +46,7 @@ Future<void> main() async {
 
 Future<void> _initializeFirebase() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  unawaited(AnalyticsService.recordAppOpen());
 }
 
 class MyApp extends ConsumerWidget {
